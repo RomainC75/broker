@@ -1,17 +1,59 @@
 package api
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"queue/api/routing"
 	"queue/config"
+	"syscall"
+	"time"
 )
+
+var mux *http.ServeMux
+
+func Init() {
+	mux = http.NewServeMux()
+}
+
+func GetRouter() *http.ServeMux {
+	routing.SetRouter(mux)
+	return mux
+}
 
 func Serve() {
 
 	config.SetEnv()
+	conf := config.Getenv()
+	Init()
+	mux = GetRouter()
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Setting up the server!")
-	})
-	http.ListenAndServe(":8080", nil)
+	// mux.ListenAndServe(":8080", nil)
+
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%v", conf.BrokerPort),
+		Handler: mux,
+	}
+
+	go func() {
+		fmt.Printf("====> listening to port : %s\n", conf.BrokerPort)
+		http.ListenAndServe(fmt.Sprintf(":%s", conf.BrokerPort), mux)
+	}()
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
+	}
+
+	<-ctx.Done()
+	log.Println("Server exiting")
 }
