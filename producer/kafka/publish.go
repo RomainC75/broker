@@ -44,12 +44,13 @@ func NewConn() *Connection {
 }
 
 func Produce(i int, message string) {
+	fmt.Println("producing : ", message)
 	// to produce messages
 	if connection == nil {
 		fmt.Println("no wriiter")
 	}
 	_, err := connection.conn.Write([]byte(message))
 	if err != nil {
-		log.Fatal("failed to write messages:", err)
+		log.Fatal("failed to write messages:", err.Error())
 	}
 }

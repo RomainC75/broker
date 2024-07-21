@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"producer/kafka"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -82,7 +83,8 @@ func (c *Connection) GoListen() {
 			fmt.Println("=> ", string(response[:n]))
 			// shared.CustomBodyValidator()
 
-			kafka.Produce(1, "ljsmdlkfj")
+			kafka.Produce(1, "message from the producer")
+			time.Sleep(time.Second)
 
 		}
 	}()
