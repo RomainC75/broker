@@ -1,7 +1,11 @@
 package routing
 
-import "net/http"
+import (
+	"net/http"
+	"queue/api/routing/routes"
+)
 
 func SetRouter(mux *http.ServeMux) {
-	SetSocketRoute(mux)
+	routes.SetSocketRoute(mux)
+	routes.SetHelloRoute(mux)
 }

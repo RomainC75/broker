@@ -1,11 +1,8 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"queue/utils"
-	"reflect"
 
 	"github.com/joho/godotenv"
 )
@@ -23,15 +20,16 @@ func SetEnv() {
 	}
 	config = &Config{}
 
-	val := reflect.ValueOf(*config)
-	for i := 0; i < val.NumField(); i++ {
-		field := val.Type().Field(i)
-		envFormat := utils.ToEnvString(field.Name)
-		value := os.Getenv(envFormat)
+	// val := reflect.ValueOf(*config)
+	// for i := 0; i < val.NumField(); i++ {
+	// 	field := val.Type().Field(i)
+	// 	envFormat := utils.ToEnvString(field.Name)
+	// 	value := os.Getenv(envFormat)
 
-		if len(value) == 0 {
-			log.Fatalf("%s not found in .env", field.Name)
-		}
-		fmt.Printf("name : %s value : %s\n", field.Name, value)
-	}
+	// 	if len(value) == 0 {
+	// 		log.Fatalf("%s not found in .env", field.Name)
+	// 	}
+	// 	fmt.Printf("name : %s value : %s\n", field.Name, value)
+	// }
+	(*config).BrokerPort = os.Getenv("BROKER_PORT")
 }
