@@ -1,11 +1,9 @@
 package controllers
 
 import (
-	"context"
-	"net/http"
+	"fmt"
 	"queue/broker"
 
-	"github.com/hibiken/asynq"
 	"golang.org/x/net/websocket"
 )
 
@@ -20,34 +18,7 @@ func NewSocketCtrl() *SocketCtrl {
 }
 
 func (socketCtrl *SocketCtrl) HandleWorkTest(conn *websocket.Conn) {
-	workCode := r.PathValue("work_code")
-	userId := r.Context().Value("user_id").(int32)
-
-	ctx := context.Background()
-	distributor := events.Get()
-	opts := []asynq.Option{
-		asynq.MaxRetry(10),
-		// asynq.ProcessIn(time.Second),
-		// + send to other queue :-)
-		asynq.Queue(string(events.CriticalQueueReq)),
-	}
-
-	scenarioRequest := work_dto.PortTestScenarioRequest{
-		UserId:    userId,
-		IPRange:   portTestScenario.PortTestScenario.IPRange,
-		PortRange: portTestScenario.PortTestScenario.PortRange,
-	}
-
-	err := distributor.DistributeTaskSendWork(
-		ctx,
-		&scenarioRequest,
-		events.PortScanner,
-		opts...,
-	)
-	if err != nil {
-		ctrl_utils.SendJsonResponse(w, http.StatusCreated, ctrl_utils.CtrlResponse{"message": "created"})
-	}
-
+	fmt.Println("sdf")
 	// fmt.Println("=> <", req)
-	ctrl_utils.SendJsonResponse(w, http.StatusCreated, ctrl_utils.CtrlResponse{"message": "created"})
+	// ctrl_utils.SendJsonResponse(w, http.StatusCreated, ctrl_utils.CtrlResponse{"message": "created"})
 }
