@@ -20,6 +20,10 @@ func (b *Broker) AddClient(conn *websocket.Conn) {
 	wg.Wait()
 }
 
+func (b *Broker) RemoveClient(client *Client) {
+	b.Clients[client] = false
+}
+
 func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 	go func() {
 		defer client.Conn.Close()
@@ -28,6 +32,8 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 			_, err := client.Conn.Read(msg)
 			if err != nil {
 				fmt.Println("error trying to read socket message", err.Error())
+				// remove client/ stop parent & current function
+				b.RemoveClient(client)
 				wg.Done()
 				return
 			} else {

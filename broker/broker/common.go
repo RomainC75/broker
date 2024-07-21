@@ -15,8 +15,9 @@ type PingInfo struct {
 }
 
 type Client struct {
-	Conn *websocket.Conn
-	Ping PingInfo
+	Conn   *websocket.Conn
+	Ping   PingInfo
+	Topics []string
 }
 
 type Message struct {

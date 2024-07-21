@@ -1,14 +1,14 @@
 package api
 
 import (
+	"broker/api/routing"
+	"broker/config"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"queue/api/routing"
-	"queue/config"
 	"syscall"
 	"time"
 )

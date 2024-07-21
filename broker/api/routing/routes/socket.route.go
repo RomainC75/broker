@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"broker/api/controllers"
 	"net/http"
-	"queue/api/controllers"
 
 	"golang.org/x/net/websocket"
 )

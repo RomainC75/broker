@@ -1,7 +1,7 @@
 package main
 
 import (
-	"queue/api"
+	"broker/api"
 )
 
 func main() {

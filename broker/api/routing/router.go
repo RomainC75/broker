@@ -1,8 +1,8 @@
 package routing
 
 import (
+	"broker/api/routing/routes"
 	"net/http"
-	"queue/api/routing/routes"
 )
 
 func SetRouter(mux *http.ServeMux) {
