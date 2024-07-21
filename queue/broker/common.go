@@ -8,20 +8,15 @@ import (
 
 var broker *Broker
 
-type Producer struct {
-	Socket *websocket.Conn
-	Ping   struct {
-		LastPing time.Time
-		IsPong   bool
-	}
+type PingInfo struct {
+	LastPing   time.Time
+	IsPingSent bool
+	IsPong     bool
 }
 
-type Consumer struct {
-	Socket *websocket.Conn
-	Ping   struct {
-		LastPing time.Time
-		IsPong   bool
-	}
+type Client struct {
+	Conn *websocket.Conn
+	Ping PingInfo
 }
 
 type Message struct {
@@ -37,13 +32,15 @@ type Topic struct {
 }
 
 type Broker struct {
-	Producers []Producer
-	Consumers []Consumer
-	Topics    []Topic
+	Clients map[*Client]bool
+	Topics  []Topic
 }
 
 func NewBroker() *Broker {
-	broker = &Broker{}
+	broker = &Broker{
+		Clients: map[*Client]bool{},
+		Topics:  []Topic{},
+	}
 	return broker
 }
 

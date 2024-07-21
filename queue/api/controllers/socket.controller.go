@@ -12,13 +12,16 @@ type SocketCtrl struct {
 }
 
 func NewSocketCtrl() *SocketCtrl {
+	b := broker.NewBroker()
 	return &SocketCtrl{
-		Broker: broker.GetBroker(),
+		Broker: b,
 	}
 }
 
 func (socketCtrl *SocketCtrl) HandleWorkTest(conn *websocket.Conn) {
-	fmt.Println("sdf")
+	socketCtrl.Broker.AddClient(conn)
+	fmt.Println("client added")
 	// fmt.Println("=> <", req)
 	// ctrl_utils.SendJsonResponse(w, http.StatusCreated, ctrl_utils.CtrlResponse{"message": "created"})
+
 }
