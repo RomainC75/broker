@@ -70,7 +70,6 @@ func (c *Connection) GoListen() {
 		log.Fatal("Failed to JSON Encode trade topics")
 		// return err
 	}
-	ctx := context.Background()
 	c.conn.Write(b)
 	go func() {
 		defer c.conn.Close()
@@ -83,7 +82,7 @@ func (c *Connection) GoListen() {
 			fmt.Println("=> ", string(response[:n]))
 			// shared.CustomBodyValidator()
 
-			kafka.Produce(ctx, 1, "ljsmdlkfj")
+			kafka.Produce(1, "ljsmdlkfj")
 
 		}
 	}()

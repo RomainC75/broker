@@ -6,11 +6,8 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/segmentio/kafka-go"
 	"golang.org/x/net/websocket"
 )
-
-var writer *kafka.Writer
 
 var connection *Connection
 
@@ -18,31 +15,12 @@ type Connection struct {
 	url    url.URL
 	config *websocket.Config
 	conn   *websocket.Conn
+	ctx    context.Context
 }
 
 var (
 	u = url.URL{Scheme: "ws", Host: "localhost:3005", Path: "/ws"}
 )
-
-// func NewConnection() {
-// 	kafkaHost := os.Getenv("KAFKA_HOST")
-// 	kafkaPort := os.Getenv("KAFKA_PORT")
-// 	kafkaUrl := fmt.Sprintf("%s:%s", kafkaHost, kafkaPort)
-// 	fmt.Println("kafka url : ", kafkaUrl)
-
-// 	topic := os.Getenv("KAFKA_TOPIC")
-
-// 	var err error
-// 	l := log.New(os.Stdout, "kafka writer: ", 0)
-// 	writer = kafka.NewWriter(kafka.WriterConfig{
-// 		Brokers: []string{kafkaUrl},
-// 		Topic:   topic,
-// 		Logger:  l,
-// 	})
-// 	if err != nil {
-// 		log.Fatal("KAFKA Producer // failed to dial leader:", err)
-// 	}
-// }
 
 func NewConn() *Connection {
 
@@ -60,11 +38,12 @@ func NewConn() *Connection {
 		url:    u,
 		config: config,
 		conn:   conn,
+		ctx:    ctx,
 	}
 	return connection
 }
 
-func Produce(ctx context.Context, i int, message string) {
+func Produce(i int, message string) {
 	// to produce messages
 	if connection == nil {
 		fmt.Println("no wriiter")

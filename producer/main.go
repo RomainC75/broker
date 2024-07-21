@@ -10,13 +10,14 @@ import (
 func main() {
 	conf.LoadEnv()
 
-	kafka.NewConnection()
-
 	var wg sync.WaitGroup
 	wg.Add(1)
 
 	conn := socket.NewConn()
 	conn.GoListen()
+
+	kafka.NewConn()
+	kafka.Produce(2, "hello")
 
 	wg.Wait()
 }
