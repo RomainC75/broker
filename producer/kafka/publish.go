@@ -4,44 +4,72 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
-	"strconv"
+	"net/url"
 
 	"github.com/segmentio/kafka-go"
+	"golang.org/x/net/websocket"
 )
 
 var writer *kafka.Writer
 
-func NewConnection() {
-	kafkaHost := os.Getenv("KAFKA_HOST")
-	kafkaPort := os.Getenv("KAFKA_PORT")
-	kafkaUrl := fmt.Sprintf("%s:%s", kafkaHost, kafkaPort)
-	fmt.Println("kafka url : ", kafkaUrl)
+var connection *Connection
 
-	topic := os.Getenv("KAFKA_TOPIC")
+type Connection struct {
+	url    url.URL
+	config *websocket.Config
+	conn   *websocket.Conn
+}
 
-	var err error
-	l := log.New(os.Stdout, "kafka writer: ", 0)
-	writer = kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{kafkaUrl},
-		Topic:   topic,
-		Logger:  l,
-	})
+var (
+	u = url.URL{Scheme: "ws", Host: "localhost:3005", Path: "/ws"}
+)
+
+// func NewConnection() {
+// 	kafkaHost := os.Getenv("KAFKA_HOST")
+// 	kafkaPort := os.Getenv("KAFKA_PORT")
+// 	kafkaUrl := fmt.Sprintf("%s:%s", kafkaHost, kafkaPort)
+// 	fmt.Println("kafka url : ", kafkaUrl)
+
+// 	topic := os.Getenv("KAFKA_TOPIC")
+
+// 	var err error
+// 	l := log.New(os.Stdout, "kafka writer: ", 0)
+// 	writer = kafka.NewWriter(kafka.WriterConfig{
+// 		Brokers: []string{kafkaUrl},
+// 		Topic:   topic,
+// 		Logger:  l,
+// 	})
+// 	if err != nil {
+// 		log.Fatal("KAFKA Producer // failed to dial leader:", err)
+// 	}
+// }
+
+func NewConn() *Connection {
+
+	config, err := websocket.NewConfig(u.String(), "http://localhost")
 	if err != nil {
-		log.Fatal("KAFKA Producer // failed to dial leader:", err)
+		log.Fatal("error with config: ", err.Error())
 	}
+	ctx := context.Background()
+	conn, err := config.DialContext(ctx)
+	if err != nil {
+		log.Fatal("error trying to dial: ", err.Error())
+	}
+
+	connection = &Connection{
+		url:    u,
+		config: config,
+		conn:   conn,
+	}
+	return connection
 }
 
 func Produce(ctx context.Context, i int, message string) {
 	// to produce messages
-	if writer == nil {
+	if connection == nil {
 		fmt.Println("no wriiter")
 	}
-	err := writer.WriteMessages(ctx, kafka.Message{
-		Partition: 0,
-		Key:       []byte(strconv.Itoa(i)),
-		Value:     []byte("this is message : " + message),
-	})
+	_, err := connection.conn.Write([]byte(message))
 	if err != nil {
 		log.Fatal("failed to write messages:", err)
 	}
