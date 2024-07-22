@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"producer/mb_broker"
+	message_broker "shared/broker"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -82,8 +82,8 @@ func (c *Connection) GoListen() {
 			}
 			fmt.Println("=> ", string(response[:n]))
 			// shared.CustomBodyValidator()
+			mb_Conn := message_broker.GetConnection()
 
-			mb_Conn := mb_broker.GetConnection()
 			mb_Conn.Produce(1, []byte("message from the producer"))
 			time.Sleep(time.Second)
 

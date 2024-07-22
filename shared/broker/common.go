@@ -20,6 +20,10 @@ type Connection struct {
 	ctx    context.Context
 }
 
+func GetConnection() *Connection {
+	return connection
+}
+
 func NewConn(u url.URL, origin string) *Connection {
 
 	config, err := websocket.NewConfig(u.String(), origin)
@@ -52,4 +56,16 @@ func (c *Connection) Subscribe(topic string) {
 		fmt.Println("imposible to marshall this message : ", message)
 	}
 	c.SendMessage(b)
+}
+
+func (c *Connection) Produce(i int, message []byte) {
+	fmt.Println("producing : ", message)
+	// to produce messages
+	if connection == nil {
+		fmt.Println("no wriiter")
+	}
+	_, err := connection.conn.Write(message)
+	if err != nil {
+		log.Fatal("failed to write messages:", err.Error())
+	}
 }

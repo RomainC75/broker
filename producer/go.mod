@@ -2,7 +2,10 @@ module producer
 
 go 1.22.2
 
-require golang.org/x/net v0.27.0
+require (
+golang.org/x/net v0.27.0
+shared v0.0.0
+)
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
@@ -19,4 +22,4 @@ require (
 	golang.org/x/text v0.16.0 // indirect
 )
 
-// replace shared => ../shared
+replace shared => ../shared

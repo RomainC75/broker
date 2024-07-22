@@ -1,11 +1,17 @@
 package main
 
 import (
+	"net/url"
 	"producer/binance"
 	"producer/conf"
-	"producer/mb_broker"
+	message_broker "shared/broker"
 
 	"sync"
+)
+
+var (
+	u      = url.URL{Scheme: "ws", Host: "localhost:3005", Path: "/ws"}
+	origin = "http://localhost"
 )
 
 func main() {
@@ -14,7 +20,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	mb_conn := mb_broker.NewConn()
+	mb_conn := message_broker.NewConn(u, origin)
 	mb_conn.Produce(2, []byte("hello"))
 
 	conn := binance.NewConn()
