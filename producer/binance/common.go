@@ -1,4 +1,4 @@
-package socket
+package binance
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"producer/kafka"
+	"producer/mb_broker"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -83,7 +83,8 @@ func (c *Connection) GoListen() {
 			fmt.Println("=> ", string(response[:n]))
 			// shared.CustomBodyValidator()
 
-			kafka.Produce(1, "message from the producer")
+			mb_Conn := mb_broker.GetConnection()
+			mb_Conn.Produce(1, []byte("message from the producer"))
 			time.Sleep(time.Second)
 
 		}

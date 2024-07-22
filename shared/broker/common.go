@@ -1,10 +1,12 @@
-package kafka
+package message_broker
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/url"
+	"shared/broker_dto"
 
 	"golang.org/x/net/websocket"
 )
@@ -18,13 +20,9 @@ type Connection struct {
 	ctx    context.Context
 }
 
-var (
-	u = url.URL{Scheme: "ws", Host: "localhost:3005", Path: "/ws"}
-)
+func NewConn(u url.URL, origin string) *Connection {
 
-func NewConn() *Connection {
-
-	config, err := websocket.NewConfig(u.String(), "http://localhost")
+	config, err := websocket.NewConfig(u.String(), origin)
 	if err != nil {
 		log.Fatal("error with config: ", err.Error())
 	}
@@ -43,14 +41,15 @@ func NewConn() *Connection {
 	return connection
 }
 
-func Produce(i int, message string) {
-	fmt.Println("producing : ", message)
-	// to produce messages
-	if connection == nil {
-		fmt.Println("no wriiter")
+func (c *Connection) Subscribe(topic string) {
+	message := broker_dto.TopicSelection{
+		Topic:   topic,
+		Request: broker_dto.Subscribe,
 	}
-	_, err := connection.conn.Write([]byte(message))
+	b, err := json.Marshal(message)
 	if err != nil {
-		log.Fatal("failed to write messages:", err.Error())
+		fmt.Println("=> ", err.Error())
+		fmt.Println("imposible to marshall this message : ", message)
 	}
+	c.SendMessage(b)
 }

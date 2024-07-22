@@ -19,4 +19,4 @@ require (
 	golang.org/x/text v0.16.0 // indirect
 )
 
-// replace shared => ../shared
+replace shared => ../shared

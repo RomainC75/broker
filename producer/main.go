@@ -1,9 +1,10 @@
 package main
 
 import (
+	"producer/binance"
 	"producer/conf"
-	"producer/kafka"
-	"producer/socket"
+	"producer/mb_broker"
+
 	"sync"
 )
 
@@ -13,11 +14,11 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	conn := socket.NewConn()
-	conn.GoListen()
+	mb_conn := mb_broker.NewConn()
+	mb_conn.Produce(2, []byte("hello"))
 
-	kafka.NewConn()
-	kafka.Produce(2, "hello")
+	conn := binance.NewConn()
+	conn.GoListen()
 
 	wg.Wait()
 }
