@@ -1,22 +1,19 @@
 package broker_dto
 
-type SubscribeMessage int
+type ActionCode int
 
 const (
-	UnSubscribe SubscribeMessage = 0
-	Subscribe   SubscribeMessage = 1
+	UnSubscribe ActionCode = 0
+	Subscribe   ActionCode = 1
+	SendMessage ActionCode = 2
 )
 
-type TopicSelection struct {
-	Topic   string `json:"topic"`
-	Request SubscribeMessage
+type Message struct {
+	Topic      string     `json:"topic"`
+	ActionCode ActionCode `json:"request"`
+	Content    struct{}   `json:"content"`
 }
 
 type IsAvailable struct {
 	Type string
-}
-
-type Message struct {
-	Type    string   `json:"type"`
-	Content struct{} `json:"content"`
 }

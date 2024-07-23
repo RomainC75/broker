@@ -46,9 +46,9 @@ func NewConn(u url.URL, origin string) *Connection {
 }
 
 func (c *Connection) Subscribe(topic string) {
-	message := broker_dto.TopicSelection{
-		Topic:   topic,
-		Request: broker_dto.Subscribe,
+	message := broker_dto.Message{
+		Topic:      topic,
+		ActionCode: broker_dto.Subscribe,
 	}
 	b, err := json.Marshal(message)
 	if err != nil {
