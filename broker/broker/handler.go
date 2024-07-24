@@ -46,8 +46,20 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 				if err != nil {
 					fmt.Println("error trying to unmarshal request : ", err.Error())
 				}
-				fmt.Println("message : ", string(newMsg))
 				utils.PrettyDisplay("request", messageContent)
+				switch messageContent.ActionCode {
+				case 0:
+					fmt.Println("trying to unsubscribe")
+				case 1:
+					fmt.Printf("trying to subscribe to topic : %s\n", messageContent.Topic)
+					if _, ok := b.Topics[messageContent.Topic]; ok {
+						b.addClientToTopic(messageContent.Topic, client)
+					} else {
+						b.Topics[messageContent.Topic] = NewTopic(messageContent.Topic)
+					}
+				case 2:
+					fmt.Println("tying to send message")
+				}
 			}
 		}
 	}()

@@ -29,19 +29,20 @@ type Message struct {
 }
 
 type Topic struct {
-	Name    string
 	Content []Message
+	// ConsumerCients []*Client
+	ConsumerCients map[*Client]bool
 }
 
 type Broker struct {
 	Clients map[*Client]bool
-	Topics  []Topic
+	Topics  map[string]Topic
 }
 
 func NewBroker() *Broker {
 	broker = &Broker{
 		Clients: map[*Client]bool{},
-		Topics:  []Topic{},
+		Topics:  map[string]Topic{},
 	}
 	return broker
 }
