@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/url"
+	"os"
 	"producer/binance"
 	"producer/conf"
 	message_broker "shared/broker"
@@ -21,10 +22,12 @@ func main() {
 	wg.Add(1)
 
 	mb_conn := message_broker.NewConn(u, origin)
-	mb_conn.Produce(2, []byte("hello"))
+	topic := os.Getenv("BROKER_TOPIC")
+
+	mb_conn.Produce(2, topic, []byte("hello"))
 
 	conn := binance.NewConn()
-	conn.GoListen()
+	conn.GoListen(topic)
 
 	wg.Wait()
 }

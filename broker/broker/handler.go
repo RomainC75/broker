@@ -71,9 +71,6 @@ func CleanByte(b []byte) []byte {
 		position--
 	}
 	newB := make([]byte, position+1)
-	fmt.Println("===> position : ", position)
-	fmt.Println("len b", len(b), b)
 	copy(newB, b[:position+1])
-	fmt.Println("len b", len(newB), newB)
 	return newB
 }

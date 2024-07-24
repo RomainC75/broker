@@ -55,7 +55,7 @@ func NewConn() *Connection {
 	return connection
 }
 
-func (c *Connection) GoListen() {
+func (c *Connection) GoListen(topic string) {
 
 	message := RequestParams{
 		Id:     subscribeId,
@@ -84,7 +84,7 @@ func (c *Connection) GoListen() {
 			// shared.CustomBodyValidator()
 			mb_Conn := message_broker.GetConnection()
 
-			mb_Conn.Produce(1, []byte("message from the producer"))
+			mb_Conn.Produce(1, topic, []byte("message from the producer"))
 			time.Sleep(time.Second)
 
 		}

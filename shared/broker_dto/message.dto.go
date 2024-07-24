@@ -11,7 +11,7 @@ const (
 type Message struct {
 	Topic      string     `json:"topic"`
 	ActionCode ActionCode `json:"request"`
-	Content    struct{}   `json:"content"`
+	Content    []byte     `json:"content"`
 }
 
 type IsAvailable struct {

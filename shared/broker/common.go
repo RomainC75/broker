@@ -58,13 +58,23 @@ func (c *Connection) Subscribe(topic string) {
 	c.SendMessage(b)
 }
 
-func (c *Connection) Produce(i int, message []byte) {
+func (c *Connection) Produce(i int, topic string, message []byte) {
 	fmt.Println("producing : ", message)
 	// to produce messages
 	if connection == nil {
 		fmt.Println("no wriiter")
 	}
-	_, err := connection.conn.Write(message)
+	mess := broker_dto.Message{
+		Topic:      topic,
+		ActionCode: broker_dto.SendMessage,
+		Content:    message,
+	}
+
+	b, err := json.Marshal(mess)
+	if err != nil {
+		fmt.Println("error trying to marshall broker_dto", err.Error())
+	}
+	_, err = connection.conn.Write(b)
 	if err != nil {
 		log.Fatal("failed to write messages:", err.Error())
 	}
