@@ -1,6 +1,8 @@
 package broker
 
 import (
+	"context"
+	"fmt"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -47,8 +49,28 @@ func NewBroker() *Broker {
 	return broker
 }
 
+func (b *Broker) Launch(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				b.scanTopicsAndSend()
+				time.Sleep(time.Millisecond * 100)
+			}
+		}
+	}()
+}
+
 func GetBroker() *Broker {
 	return broker
+}
+
+func (b *Broker) scanTopicsAndSend() {
+	for _, topic := range b.Topics {
+		fmt.Println("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
+	}
 }
 
 // Connection to topic

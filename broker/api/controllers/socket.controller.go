@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"broker/broker"
+	"context"
 	"fmt"
 
 	"golang.org/x/net/websocket"
@@ -11,8 +12,9 @@ type SocketCtrl struct {
 	Broker *broker.Broker
 }
 
-func NewSocketCtrl() *SocketCtrl {
+func NewSocketCtrl(ctx context.Context) *SocketCtrl {
 	b := broker.NewBroker()
+	b.Launch(ctx)
 	return &SocketCtrl{
 		Broker: b,
 	}
