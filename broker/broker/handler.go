@@ -30,6 +30,7 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 			msg := make([]byte, 2048)
 			_, err := client.Conn.Read(msg)
 			newMsg := CleanByte(msg)
+			fmt.Println("------------------------NEW MESSAAGE RECEIVED----------------------------")
 			if err != nil {
 				fmt.Println("error trying to read socket message", err.Error())
 				// remove client/ stop parent & current function
@@ -44,17 +45,18 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 				}
 				utils.PrettyDisplay("request", messageContent)
 				switch messageContent.ActionCode {
-				case 0:
+				case broker_dto.UnSubscribe:
 					fmt.Println("trying to unsubscribe")
-				case 1:
+				case broker_dto.Subscribe:
 					fmt.Printf("trying to subscribe to topic : %s\n", messageContent.Topic)
-					if _, ok := b.Topics[messageContent.Topic]; ok {
-						b.addClientToTopic(messageContent.Topic, client)
-					} else {
-						b.Topics[messageContent.Topic] = NewTopic(messageContent.Topic)
+					isTopicExist := b.isTopicExists(messageContent.Topic)
+					if !isTopicExist {
+						b.Topics[messageContent.Topic] = NewTopic()
 					}
-				case 2:
-					fmt.Println("tying to send message")
+					b.addClientToTopic(messageContent.Topic, client)
+				case broker_dto.SendMessage:
+					fmt.Println("tying to push message into queue")
+					b.addMessage(messageContent)
 				}
 			}
 		}

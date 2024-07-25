@@ -34,6 +34,7 @@ type Topic struct {
 	Content []Message
 	// ConsumerCients []*Client
 	ConsumerCients map[*Client]bool
+	ReaderIndex    int
 }
 
 type Broker struct {
@@ -57,7 +58,7 @@ func (b *Broker) Launch(ctx context.Context) {
 				return
 			default:
 				b.scanTopicsAndSend()
-				time.Sleep(time.Millisecond * 100)
+				time.Sleep(time.Second)
 			}
 		}
 	}()
@@ -68,8 +69,16 @@ func GetBroker() *Broker {
 }
 
 func (b *Broker) scanTopicsAndSend() {
-	for _, topic := range b.Topics {
-		fmt.Println("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
+	fmt.Println("SCANNER")
+	for topicName, topic := range b.Topics {
+		fmt.Println("->", topicName, len(topic.Content))
+		fmt.Println("-> listeners : ", len(topic.ConsumerCients))
+		if len(topic.Content) > 0 {
+			fmt.Println("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
+		} else {
+			fmt.Println("empty")
+		}
+
 	}
 }
 

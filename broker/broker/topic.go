@@ -2,7 +2,7 @@ package broker
 
 import "errors"
 
-func NewTopic(name string) Topic {
+func NewTopic() Topic {
 	return Topic{
 		Content:        []Message{},
 		ConsumerCients: map[*Client]bool{},
