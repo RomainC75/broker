@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/url"
 	"shared/broker_dto"
+	"shared/utils"
 
 	"golang.org/x/net/websocket"
 )
@@ -18,6 +19,7 @@ type Connection struct {
 	config *websocket.Config
 	conn   *websocket.Conn
 	ctx    context.Context
+	busy   bool
 }
 
 func GetConnection() *Connection {
@@ -77,5 +79,59 @@ func (c *Connection) Produce(i int, topic string, message []byte) {
 	_, err = connection.conn.Write(b)
 	if err != nil {
 		log.Fatal("failed to write messages:", err.Error())
+	}
+}
+
+func (c *Connection) GoHandleJobs(handler func() bool) {
+	go func() {
+		for {
+			msg := make([]byte, 2048)
+			_, err := c.conn.Read(msg)
+			if err != nil {
+				fmt.Printf("error trying to read the conn")
+			}
+
+			newMsg := utils.CleanByte(msg)
+			var messageContent broker_dto.Message
+			err = json.Unmarshal(newMsg, &messageContent)
+			if err != nil {
+				fmt.Println("error trying to unmarshal request : ", err.Error())
+			}
+			utils.PrettyDisplay("request", messageContent)
+			switch messageContent.ActionCode {
+			case broker_dto.Ping:
+				c.SendPong()
+			case broker_dto.IsAvailable:
+				c.SendIsAvailable()
+			}
+		}
+	}()
+}
+
+func (c Connection) SendIsAvailable() {
+	msg := broker_dto.Message{
+		ActionCode: broker_dto.Pong,
+	}
+	b, err := json.Marshal(msg)
+	if err != nil {
+		fmt.Println("marshall : isAvailable response not possible")
+	}
+	_, err = c.conn.Write(b)
+	if err != nil {
+		fmt.Println("response isAvailable not possible")
+	}
+}
+
+func (c Connection) SendPong() {
+	msg := broker_dto.Message{
+		ActionCode: broker_dto.Pong,
+	}
+	b, err := json.Marshal(msg)
+	if err != nil {
+		fmt.Printf("marshall : pong not possible")
+	}
+	_, err = c.conn.Write(b)
+	if err != nil {
+		fmt.Printf("pong not possible")
 	}
 }

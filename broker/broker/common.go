@@ -3,6 +3,7 @@ package broker
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -21,6 +22,7 @@ type Client struct {
 	Ping        PingInfo
 	Topics      []string
 	IsAvailable bool
+	m           *sync.Mutex
 }
 
 type Message struct {

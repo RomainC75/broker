@@ -6,6 +6,9 @@ const (
 	UnSubscribe ActionCode = 0
 	Subscribe   ActionCode = 1
 	SendMessage ActionCode = 2
+	Ping        ActionCode = 3
+	Pong        ActionCode = 4
+	IsAvailable ActionCode = 5
 )
 
 type Message struct {
@@ -14,6 +17,6 @@ type Message struct {
 	Content    []byte     `json:"content"`
 }
 
-type IsAvailable struct {
-	Type string
+type IsAvailableContent struct {
+	IsAvailable bool `json:"is_available"`
 }

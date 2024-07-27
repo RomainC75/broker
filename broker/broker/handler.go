@@ -29,7 +29,7 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 		for {
 			msg := make([]byte, 2048)
 			_, err := client.Conn.Read(msg)
-			newMsg := CleanByte(msg)
+			newMsg := utils.CleanByte(msg)
 			fmt.Println("------------------------NEW MESSAAGE RECEIVED----------------------------")
 			if err != nil {
 				fmt.Println("error trying to read socket message", err.Error())
@@ -57,22 +57,17 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 				case broker_dto.SendMessage:
 					fmt.Println("tying to push message into queue")
 					b.addMessage(messageContent)
+				case broker_dto.IsAvailable:
+					var isAvailableDto broker_dto.IsAvailableContent
+					err := json.Unmarshal(messageContent.Content, &isAvailableDto)
+					if err != nil {
+						fmt.Println("error tryin to un marshal isAvailableDto")
+					}
+					client.SetIsAvailable(isAvailableDto.IsAvailable)
 				}
 			}
-		}
-	}()
-}
 
-func CleanByte(b []byte) []byte {
-	if len(b) == 0 {
-		return []byte{}
-	}
-	position := len(b) - 1
-	fmt.Println("position : ", position)
-	for position != -1 && b[position] == '\x00' {
-		position--
-	}
-	newB := make([]byte, position+1)
-	copy(newB, b[:position+1])
-	return newB
+		}
+
+	}()
 }
