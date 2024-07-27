@@ -15,6 +15,7 @@ type PingInfo struct {
 	LastPing   time.Time
 	IsPingSent bool
 	IsPong     bool
+	Retry int
 }
 
 type Client struct {
@@ -39,15 +40,31 @@ type Topic struct {
 	ReaderIndex    int
 }
 
+type PingParameter struct {
+	Interval time.Duration
+	MaxRetry int
+}
+
+type BrokerParameters struct {
+	Ping PingParameter
+}
+
 type Broker struct {
 	Clients map[*Client]bool
 	Topics  map[string]Topic
+	Parameters BrokerParameters
 }
 
 func NewBroker() *Broker {
 	broker = &Broker{
 		Clients: map[*Client]bool{},
 		Topics:  map[string]Topic{},
+		Parameters: broker.BrokerParameters{
+			Ping: PingParameter {
+				Interval: time.Second*5,
+				MaxRetry: 3,
+			},
+		},
 	}
 	return broker
 }
@@ -60,6 +77,7 @@ func (b *Broker) Launch(ctx context.Context) {
 				return
 			default:
 				b.scanTopicsAndSend()
+				b.scanForPing()
 				time.Sleep(time.Second)
 			}
 		}
@@ -81,6 +99,14 @@ func (b *Broker) scanTopicsAndSend() {
 			fmt.Println("empty")
 		}
 
+	}
+}
+
+func (b *Broker) scanForPing(){
+	now := time.Now()
+	for client, _ :=  range b.Clients{
+		// 
+		if client.Ping.IsPingSent && client.Ping.IsPong && time.Since(client.Ping.LastPing) > b.Parameters. 
 	}
 }
 

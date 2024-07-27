@@ -25,3 +25,12 @@ func (c *Client) SetIsAvailable(isAvailable bool) {
 	c.IsAvailable = isAvailable
 	c.m.Unlock()
 }
+
+func (c *Client) SendPing() {
+	now := time.Now()
+	c.m.Lock()
+	c.Ping.LastPing = now
+	c.Ping.IsPong = false
+	c.Ping.IsPingSent = true
+	c.m.Unlock()
+}
