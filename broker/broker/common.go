@@ -15,7 +15,7 @@ type PingInfo struct {
 	LastPing   time.Time
 	IsPingSent bool
 	IsPong     bool
-	Retry int
+	Retry      int
 }
 
 type Client struct {
@@ -41,8 +41,9 @@ type Topic struct {
 }
 
 type PingParameter struct {
-	Interval time.Duration
-	MaxRetry int
+	IntervalAfterPing time.Duration
+	IntervalAfterPong time.Duration
+	MaxRetry          int
 }
 
 type BrokerParameters struct {
@@ -50,8 +51,8 @@ type BrokerParameters struct {
 }
 
 type Broker struct {
-	Clients map[*Client]bool
-	Topics  map[string]Topic
+	Clients    map[*Client]bool
+	Topics     map[string]Topic
 	Parameters BrokerParameters
 }
 
@@ -59,10 +60,11 @@ func NewBroker() *Broker {
 	broker = &Broker{
 		Clients: map[*Client]bool{},
 		Topics:  map[string]Topic{},
-		Parameters: broker.BrokerParameters{
-			Ping: PingParameter {
-				Interval: time.Second*5,
-				MaxRetry: 3,
+		Parameters: BrokerParameters{
+			Ping: PingParameter{
+				IntervalAfterPing: time.Second * 1,
+				IntervalAfterPong: time.Second * 5,
+				MaxRetry:          3,
 			},
 		},
 	}
@@ -102,13 +104,37 @@ func (b *Broker) scanTopicsAndSend() {
 	}
 }
 
-func (b *Broker) scanForPing(){
+func (b *Broker) scanForPing() {
 	now := time.Now()
-	for client, _ :=  range b.Clients{
-		// 
-		if client.Ping.IsPingSent && client.Ping.IsPong && time.Since(client.Ping.LastPing) > b.Parameters. 
+	for client, _ := range b.Clients {
+		// everything went right before
+		if client.Ping.IsPingSent && client.Ping.IsPong {
+			if time.Since(client.Ping.LastPing) > b.Parameters.Ping.IntervalAfterPing {
+				client.SendPing()
+			} else {
+				continue
+			}
+		}
 	}
 }
+
+// Ping sent
+// time
+// is Pong false
+
+// check 1
+// if time before => nothing
+
+// check 2
+// if time after => resend
+// retry ++
+// OR
+// kill if retry > max_retry
+
+// if get pong
+// isPong true
+// is PingSent true
+// retry 0
 
 // Connection to topic
 // send message key/value
