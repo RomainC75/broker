@@ -109,6 +109,7 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 			case broker_dto.SendJob:
 				c.SendIsAvailableInfo(false)
 				handlerFn(messageContent.Content)
+				c.SendIsAvailableInfo(true)
 			}
 		}
 	}()

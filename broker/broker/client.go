@@ -20,6 +20,10 @@ func NewClient(conn *websocket.Conn) *Client {
 	}
 }
 
+func (c *Client) Close() {
+	c.Conn.Close()
+}
+
 func (c *Client) SetIsAvailable(isAvailable bool) {
 	c.m.Lock()
 	c.IsAvailable = isAvailable

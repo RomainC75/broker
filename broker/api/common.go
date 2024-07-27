@@ -2,6 +2,7 @@ package api
 
 import (
 	"broker/api/routing"
+	"broker/broker"
 	"broker/config"
 	"context"
 	"fmt"
@@ -46,6 +47,9 @@ func Serve() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
+	broker := broker.GetBroker()
+	broker.CloseEveryConnections()
+
 	log.Println("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)

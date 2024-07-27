@@ -71,6 +71,15 @@ func NewBroker() *Broker {
 	return broker
 }
 
+func (b *Broker) CloseEveryConnections() {
+	nb := 0
+	for c := range b.Clients {
+		c.Close()
+		nb++
+	}
+	fmt.Printf("--> %d connections closed\n", nb)
+}
+
 func (b *Broker) Launch(ctx context.Context) {
 	go func() {
 		for {
@@ -105,33 +114,35 @@ func (b *Broker) scanTopicsAndSend() {
 }
 
 func (b *Broker) scanForPing() {
-	now := time.Now()
-	for client, _ := range b.Clients {
-		// everything went right before
-		if client.Ping.IsPingSent && client.Ping.IsPong {
-			if time.Since(client.Ping.LastPing) > b.Parameters.Ping.IntervalAfterPing {
-				client.SendPing()
-			} else {
-				continue
-			}
-		}
-	}
+	// now := time.Now()
+	// for client, _ := range b.Clients {
+	// 	// everything went right before
+	// 	if client.Ping.IsPingSent && !client.Ping.IsPong {
+	// 		if time.Since(client.Ping.LastPing) > b.Parameters.Ping.IntervalAfterPing {
+	// 			client.SendPing()
+	// 		} else {
+	// 			continue
+	// 		}
+	// 	} else if {
+
+	// 	}
+	// }
 }
 
-// Ping sent
+// !! Ping sent
 // time
 // is Pong false
 
-// check 1
+// !! check 1
 // if time before => nothing
 
-// check 2
+// !! check 2
 // if time after => resend
 // retry ++
 // OR
 // kill if retry > max_retry
 
-// if get pong
+// !! if get pong
 // isPong true
 // is PingSent true
 // retry 0
