@@ -82,7 +82,7 @@ func (c *Connection) Produce(i int, topic string, message []byte) {
 	}
 }
 
-func (c *Connection) GoHandleJobs(handler func() bool) {
+func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 	go func() {
 		for {
 			msg := make([]byte, 2048)
@@ -98,21 +98,28 @@ func (c *Connection) GoHandleJobs(handler func() bool) {
 				fmt.Println("error trying to unmarshal request : ", err.Error())
 			}
 			utils.PrettyDisplay("request", messageContent)
+
 			switch messageContent.ActionCode {
+			// !! should be a separate go routine
 			case broker_dto.Ping:
 				c.SendPong()
+			// !! shoud be a separate go routine
 			case broker_dto.IsAvailable:
-				c.SendIsAvailable()
+				c.SendIsAvailableInfo(true)
+			case broker_dto.SendJob:
+				c.SendIsAvailableInfo(false)
+				handlerFn(messageContent.Content)
 			}
 		}
 	}()
 }
 
-func (c Connection) SendIsAvailable() {
-	msg := broker_dto.Message{
-		ActionCode: broker_dto.Pong,
+func (c Connection) SendIsAvailableInfo(isAvailable bool) {
+	message, err := broker_dto.GetIsAvailableMessage(isAvailable)
+	if err != nil {
+		fmt.Println("sendIsAvailableInfo : cannot get isAvailable message")
 	}
-	b, err := json.Marshal(msg)
+	b, err := json.Marshal(message)
 	if err != nil {
 		fmt.Println("marshall : isAvailable response not possible")
 	}

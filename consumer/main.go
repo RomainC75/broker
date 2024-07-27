@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/url"
 	"producer/conf"
 	message_broker "shared/broker"
@@ -19,13 +20,14 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	// conn := socket.NewConn()
-	// conn.GoListen()
-
 	mb_conn := message_broker.NewConn(u, origin)
 	mb_conn.Subscribe(topic)
-
-	// mb_conn.Produce(2, []byte("hello"))
+	mb_conn.GoHandleJobs(jobHandler)
 
 	wg.Wait()
+}
+
+func jobHandler(message []byte) bool {
+	fmt.Printf("handler got message ")
+	return true
 }
