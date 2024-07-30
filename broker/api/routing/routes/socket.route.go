@@ -11,5 +11,7 @@ import (
 func SetSocketRoute(mux *http.ServeMux) {
 	ctx := context.Background()
 	socketServer := controllers.NewSocketCtrl(ctx)
-	mux.Handle("/ws", websocket.Handler(socketServer.HandleWorkTest))
+	mux.Handle("/ws", websocket.Handler(socketServer.HandleBroker))
+	mux.Handle("/reader", websocket.Handler(socketServer.HandleWatch))
+
 }

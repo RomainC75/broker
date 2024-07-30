@@ -6,7 +6,7 @@ import (
 )
 
 func (c *Connection) SendMessage(message []byte) {
-	fmt.Println("producing : ", message)
+	fmt.Println("send message : ", message)
 	// to produce messages
 	if connection == nil {
 		fmt.Println("no wriiter")

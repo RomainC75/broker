@@ -3,6 +3,8 @@ package broker
 import (
 	"fmt"
 	"shared/broker_dto"
+
+	"github.com/sirupsen/logrus"
 )
 
 func (b *Broker) addMessage(message broker_dto.Message) {
@@ -18,6 +20,10 @@ func (b *Broker) addMessage(message broker_dto.Message) {
 	topic := b.Topics[message.Topic]
 	topic.Content = append(topic.Content, newMessage)
 	b.Topics[message.Topic] = topic
+
+	topic = b.Topics[message.Topic]
+	logrus.Warn("CHECK : ", len(topic.Content))
+
 }
 
 func (b *Broker) isTopicExists(name string) bool {

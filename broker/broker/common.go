@@ -6,16 +6,23 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
 var broker *Broker
 
 type PingInfo struct {
-	LastPing   time.Time
-	IsPingSent bool
-	IsPong     bool
-	Retry      int
+	LastPing   time.Time `json:"time"`
+	IsPingSent bool      `json:"is_ping_sent"`
+	IsPong     bool      `json:"is_pong"`
+	Retry      int       `json:"retry"`
+}
+
+type Watcher struct {
+	Conn *websocket.Conn
+	Ping PingInfo
+	m    *sync.Mutex
 }
 
 type Client struct {
@@ -52,8 +59,10 @@ type BrokerParameters struct {
 
 type Broker struct {
 	Clients    map[*Client]bool
+	Watcher    map[*Watcher]bool
 	Topics     map[string]Topic
 	Parameters BrokerParameters
+	m          *sync.Mutex
 }
 
 func NewBroker() *Broker {
@@ -78,9 +87,10 @@ func (b *Broker) CloseEveryConnections() {
 		nb++
 	}
 	fmt.Printf("--> %d connections closed\n", nb)
+
 }
 
-func (b *Broker) Launch(ctx context.Context) {
+func (b *Broker) LaunchLoop(ctx context.Context) {
 	go func() {
 		for {
 			select {
@@ -100,16 +110,15 @@ func GetBroker() *Broker {
 }
 
 func (b *Broker) scanTopicsAndSend() {
-	fmt.Println("SCANNER")
+	logrus.Trace("SCANNER")
 	for topicName, topic := range b.Topics {
-		fmt.Println("->", topicName, len(topic.Content))
-		fmt.Println("-> listeners : ", len(topic.ConsumerCients))
+		logrus.Infof("==> %s : consmrs : %d / queue / %d \n", topicName, len(topic.ConsumerCients), len(topic.Content))
 		if len(topic.Content) > 0 {
-			fmt.Println("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
+			logrus.Warning("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
+			topic.SendJobToAvailableClient(topicName)
 		} else {
-			fmt.Println("empty")
+			logrus.Errorf("topic %s EMPTY", topicName)
 		}
-
 	}
 }
 

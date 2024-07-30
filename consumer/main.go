@@ -22,6 +22,7 @@ func main() {
 
 	mb_conn := message_broker.NewConn(u, origin)
 	mb_conn.Subscribe(topic)
+
 	mb_conn.GoHandleJobs(jobHandler)
 
 	wg.Wait()
