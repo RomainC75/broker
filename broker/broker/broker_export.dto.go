@@ -1,8 +1,4 @@
-package broker_client_dto
-
-import (
-	"broker/broker"
-)
+package broker
 
 // type PingInfo struct {
 // 	LastPing   time.Time `json:"time"`
@@ -19,9 +15,9 @@ type MessageDto struct {
 }
 
 type ClientDto struct {
-	Ping        broker.PingInfo `json:"ping"`
-	Topics      []string        `json:"topics"`
-	IsAvailable bool            `json:"is_available"`
+	Ping        PingInfo `json:"ping"`
+	Topics      []string `json:"topics"`
+	IsAvailable bool     `json:"is_available"`
 }
 
 type TopicDto struct {
@@ -30,14 +26,16 @@ type TopicDto struct {
 	ReaderIndex    int          `json:"reader_index"`
 }
 
-func ToTopicsDtoToSend(broker *broker.Broker) map[string]TopicDto {
+func ToTopicsDtoToSend(broker *Broker) map[string]TopicDto {
 	topics := make(map[string]TopicDto)
-
+	for topicName, topic := range broker.Topics {
+		topics[topicName] = ToTopicDto(topic)
+	}
 	return topics
 }
 
-func ToPingInfo(pingInfo broker.PingInfo) broker.PingInfo {
-	return broker.PingInfo{
+func ToPingInfo(pingInfo PingInfo) PingInfo {
+	return PingInfo{
 		LastPing:   pingInfo.LastPing,
 		IsPingSent: pingInfo.IsPingSent,
 		IsPong:     pingInfo.IsPong,
@@ -45,7 +43,7 @@ func ToPingInfo(pingInfo broker.PingInfo) broker.PingInfo {
 	}
 }
 
-func ToConsumerClients(rawClients map[*broker.Client]bool) []ClientDto {
+func ToConsumerClients(rawClients map[*Client]bool) []ClientDto {
 	clients := []ClientDto{}
 	for rawClient := range rawClients {
 		clients = append(clients, ClientDto{
@@ -57,7 +55,7 @@ func ToConsumerClients(rawClients map[*broker.Client]bool) []ClientDto {
 	return clients
 }
 
-func ToTopicDto(topic broker.Topic) TopicDto {
+func ToTopicDto(topic Topic) TopicDto {
 	return TopicDto{
 		Content:        ToMessageDto(topic.Content),
 		ConsumerCients: ToConsumerClients(topic.ConsumerCients),
@@ -65,7 +63,7 @@ func ToTopicDto(topic broker.Topic) TopicDto {
 	}
 }
 
-func ToMessageDto(messages []broker.Message) []MessageDto {
+func ToMessageDto(messages []Message) []MessageDto {
 	dtoMessages := []MessageDto{}
 	for _, message := range messages {
 		dtoMessages = append(dtoMessages, MessageDto{

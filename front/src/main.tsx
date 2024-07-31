@@ -5,10 +5,12 @@ import './index.css'
 import { SocketProviderWrapper } from './context/socket.context.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <>
     <SocketProviderWrapper>
     <App />
 
     </SocketProviderWrapper>
-  </React.StrictMode>,
+  </>
+  // </React.StrictMode>,
 )

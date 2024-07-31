@@ -68,6 +68,7 @@ type Broker struct {
 func NewBroker() *Broker {
 	broker = &Broker{
 		Clients: map[*Client]bool{},
+		Watcher: map[*Watcher]bool{},
 		Topics:  map[string]Topic{},
 		Parameters: BrokerParameters{
 			Ping: PingParameter{
@@ -76,6 +77,7 @@ func NewBroker() *Broker {
 				MaxRetry:          3,
 			},
 		},
+		m: &sync.Mutex{},
 	}
 	return broker
 }

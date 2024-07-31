@@ -14,7 +14,9 @@ func (b *Broker) AddClient(conn *websocket.Conn) {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	newClient := NewClient(conn)
+	b.m.Lock()
 	b.Clients[newClient] = true
+	b.m.Unlock()
 	b.GoListenToClient(newClient, &wg)
 	wg.Wait()
 }

@@ -4,6 +4,7 @@ import (
 	"broker/broker"
 	"context"
 	"fmt"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -15,6 +16,7 @@ type SocketCtrl struct {
 func NewSocketCtrl(ctx context.Context) *SocketCtrl {
 	b := broker.NewBroker()
 	b.LaunchLoop(ctx)
+	b.LaunchWatcherLoop(ctx)
 	return &SocketCtrl{
 		Broker: b,
 	}
@@ -28,6 +30,8 @@ func (socketCtrl *SocketCtrl) HandleBroker(conn *websocket.Conn) {
 }
 
 func (socketCtrl *SocketCtrl) HandleWatch(conn *websocket.Conn) {
+	conn.Write([]byte("hello"))
+	time.Sleep(time.Second)
 	socketCtrl.Broker.AddWatcher(conn)
 	fmt.Println("client added")
 	// fmt.Println("=> <", req)
