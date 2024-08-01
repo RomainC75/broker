@@ -10,6 +10,28 @@ services:
     ports:
     - 3005:${BROKER_PORT}
 
+  producer:
+    build:
+      dockerfile: Dockerfile
+      context: ./producer
+    volumes:
+      - ./producer:/app
+      - ./.env:/.env
+      - ./shared:/shared
+    depends_on:
+      - broker
+
+  # consumer:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./consumer
+  #   volumes:
+  #     - ./consumer:/app
+  #     - ./.env:/.env
+  #     - ./shared:/shared
+  #   depends_on:
+  #     - broker
+
   front:
     container_name: front_watcher
     build:
