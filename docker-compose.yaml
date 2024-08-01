@@ -1,4 +1,15 @@
 services:
+  broker:
+    build:
+      dockerfile: Dockerfile
+      context: ./broker
+    volumes:
+      - ./broker:/app
+      - ./.env:/.env
+      - ./shared:/shared
+    ports:
+    - 3005:${BROKER_PORT}
+
   front:
     container_name: front_watcher
     build:
@@ -8,6 +19,7 @@ services:
       # - VITE_API_URL=${VITE_API_URL}
       # - VITE_API_AUDIENCE_ID=${VITE_API_AUDIENCE_ID}
       # - VITE_API_TENANT_ID=${VITE_API_TENANT_ID}
+      - BROKER_HOST_FROM_FRONT=${BROKER_HOST_FROM_FRONT}
       - BROKER_HOST=${BROKER_HOST}
       - BROKER_PORT=${BROKER_PORT}
       - BROKER_TOPIC=${BROKER_TOPIC}
@@ -16,4 +28,7 @@ services:
       - ./common:/app/src/common
     ports:
       - 5173:${FRONT_PORT}
-    network_mode: host
+    depends_on:
+      - broker
+
+  

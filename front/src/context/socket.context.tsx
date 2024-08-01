@@ -6,7 +6,7 @@ import { TopicMapDto } from "../@types/back_types";
 
 const SocketContext = createContext<ISocketContext | null>(null);
 
-const BROKER_HOST = process.env.BROKER_HOST || "";
+const BROKER_HOST = process.env.BROKER_HOST_FROM_FRONT || "";
 // const BROKER_HOST = "host.docker.internal"
 const BROKER_PORT = process.env.BROKER_PORT || "";
 
@@ -15,7 +15,8 @@ const socket = new WebSocket(WS_URL)
 
 function SocketProviderWrapper(props: PropsWithChildren) {
   const [myState, setMyState] = useState<number>(3);
-  const [data, setData] = useState<TopicMapDto | null>(JSON.parse(dataJson))
+  const [data, setData] = useState<TopicMapDto | null>()
+  // const [data, setData] = useState<TopicMapDto | null>(JSON.parse(dataJson))
   
   
 
