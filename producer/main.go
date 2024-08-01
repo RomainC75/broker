@@ -5,6 +5,7 @@ import (
 	"net/url"
 	message_broker "shared/broker"
 	"shared/config"
+	"time"
 
 	"sync"
 )
@@ -14,9 +15,10 @@ var (
 )
 
 func main() {
+	time.Sleep(time.Second)
+
 	config.SetEnv()
 	conf := config.Getenv()
-
 	u := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/ws"}
 
 	var wg sync.WaitGroup

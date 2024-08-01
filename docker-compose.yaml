@@ -21,16 +21,16 @@ services:
     depends_on:
       - broker
 
-  # consumer:
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ./consumer
-  #   volumes:
-  #     - ./consumer:/app
-  #     - ./.env:/.env
-  #     - ./shared:/shared
-  #   depends_on:
-  #     - broker
+  consumer:
+    build:
+      dockerfile: Dockerfile
+      context: ./consumer
+    volumes:
+      - ./consumer:/app
+      - ./.env:/.env
+      - ./shared:/shared
+    depends_on:
+      - producer
 
   front:
     container_name: front_watcher
