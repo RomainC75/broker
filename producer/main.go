@@ -27,7 +27,9 @@ func main() {
 	mb_conn := message_broker.NewConn(u, origin)
 	topic := conf.BrokerTopic
 
-	mb_conn.Produce(2, topic, []byte("hello"))
+	mb_conn.Produce(2, topic, []byte("hello1"))
+	time.Sleep(time.Second)
+	mb_conn.Produce(2, topic, []byte("hello2"))
 
 	wg.Wait()
 }

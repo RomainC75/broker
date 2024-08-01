@@ -9,6 +9,7 @@ import (
 	"shared/broker_dto"
 	"shared/utils"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
@@ -88,7 +89,9 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 			msg := make([]byte, 2048)
 			_, err := c.conn.Read(msg)
 			if err != nil {
-				fmt.Printf("error trying to read the conn")
+				fmt.Println("error trying to read the conn")
+				c.conn.Close()
+				return
 			}
 
 			newMsg := utils.CleanByte(msg)
@@ -97,7 +100,7 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 			if err != nil {
 				fmt.Println("error trying to unmarshal request : ", err.Error())
 			}
-			utils.PrettyDisplay("request", messageContent)
+			utils.PrettyDisplay("CONSUMER", messageContent)
 
 			switch messageContent.ActionCode {
 			// !! should be a separate go routine
@@ -108,6 +111,7 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 				c.SendIsAvailableInfo(true)
 			case broker_dto.SendJob:
 				c.SendIsAvailableInfo(false)
+				c.SendAcceptJobMessage(messageContent.Topic, messageContent.Offset)
 				handlerFn(messageContent.Content)
 				c.SendIsAvailableInfo(true)
 			}
@@ -130,6 +134,24 @@ func (c Connection) SendIsAvailableInfo(isAvailable bool) {
 	}
 }
 
+func (c Connection) SendAcceptJobMessage(topic string, offset int) {
+	message := broker_dto.Message{
+		Topic:      topic,
+		ActionCode: broker_dto.AcceptJob,
+		Offset:     offset,
+	}
+	logrus.Warn("sned accept message ")
+	utils.PrettyDisplay("SEND ACCEPT MEESSAGE ", message)
+	b, err := json.Marshal(message)
+	if err != nil {
+		fmt.Println("marshall : isAvailable response not possible")
+	}
+	_, err = c.conn.Write(b)
+	if err != nil {
+		fmt.Println("accept job message sent !")
+	}
+}
+
 func (c Connection) SendPong() {
 	msg := broker_dto.Message{
 		ActionCode: broker_dto.Pong,
@@ -142,4 +164,8 @@ func (c Connection) SendPong() {
 	if err != nil {
 		fmt.Printf("pong not possible")
 	}
+}
+
+func SendMessage(c Connection, message broker_dto.Message) {
+
 }

@@ -15,7 +15,7 @@ func NewClient(conn *websocket.Conn) *Client {
 			IsPingSent: false,
 			IsPong:     false,
 		},
-		IsAvailable: false,
+		IsAvailable: true,
 		m:           &sync.Mutex{},
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"shared/broker_dto"
-	"shared/utils"
 
 	"github.com/sirupsen/logrus"
 )
@@ -48,22 +47,22 @@ func (b *Broker) removeClientFromTopic(topic string, client *Client) error {
 
 // ====TOPIC====
 func (t *Topic) SendJobToAvailableClient(topicName string) {
-	logrus.Warn("TRYING TO SEND TO ", topicName, len(t.ConsumerCients))
+	// logrus.Warn("TRYING TO SEND TO ", topicName, len(t.ConsumerCients))
 	for c := range t.ConsumerCients {
-		logrus.Infof("is client available : %t\n", c.IsAvailable)
+		// logrus.Infof("is client available : %t\n", c.IsAvailable)
 		if c.IsAvailable {
 			var nextJob []byte
 			for i, jobContent := range t.Content {
-				logrus.Warn("potential job : ")
-				utils.PrettyDisplay("job", jobContent)
+				// logrus.Warn("potential job : ")
+				// utils.PrettyDisplay("job", jobContent)
 				if !jobContent.IsSent && !jobContent.IsHandled {
-					logrus.Info("FOUND 1 CLIENT AVAILABLE")
+					// logrus.Info("FOUND 1 CLIENT AVAILABLE")
 					nextJob = jobContent.Value
 					t.Content[i].IsSent = true
-					t.Content[i].IsHandled = true
 					message := broker_dto.Message{
 						Topic:      topicName,
 						ActionCode: broker_dto.SendJob,
+						Offset:     i,
 						Content:    nextJob,
 					}
 					messageB, err := json.Marshal(message)

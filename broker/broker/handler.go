@@ -25,6 +25,7 @@ func (b *Broker) RemoveClient(client *Client) {
 	b.Clients[client] = false
 }
 
+// * =======  LOOP =======
 func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 	go func() {
 		defer client.Conn.Close()
@@ -45,7 +46,7 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 				if err != nil {
 					fmt.Println("error trying to unmarshal request : ", err.Error())
 				}
-				utils.PrettyDisplay("request", messageContent)
+				// utils.PrettyDisplay("request", messageContent)
 				switch messageContent.ActionCode {
 				case broker_dto.UnSubscribe:
 					fmt.Println("trying to unsubscribe")
@@ -66,6 +67,8 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 						fmt.Println("error tryin to un marshal isAvailableDto")
 					}
 					client.SetIsAvailable(isAvailableDto.IsAvailable)
+				case broker_dto.AcceptJob:
+					b.SetJobToAccepted(messageContent.Topic, messageContent.Offset)
 				}
 			}
 

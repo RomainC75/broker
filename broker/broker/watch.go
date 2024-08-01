@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"shared/utils"
 	"sync"
 	"time"
 
@@ -46,8 +45,8 @@ func (b *Broker) AddWatcher(conn *websocket.Conn) {
 
 func (b *Broker) BroadcastInfosToWatchers() {
 	dataToSent := ToTopicsDtoToSend(b)
-	fmt.Println("watcher looop")
-	utils.PrettyDisplay("PRETTY : ", dataToSent)
+	// fmt.Println("watcher looop")
+	// utils.PrettyDisplay("PRETTY : ", dataToSent)
 	by, err := json.Marshal(dataToSent)
 	if err != nil {
 		logrus.Error(err.Error())

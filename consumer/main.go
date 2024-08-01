@@ -34,6 +34,6 @@ func main() {
 }
 
 func jobHandler(message []byte) bool {
-	fmt.Printf("handler got message ")
+	fmt.Println("--- GOT MESSAGE : ", string(message))
 	return true
 }

@@ -13,12 +13,14 @@ const (
 	Pong        ActionCode = 4
 	IsAvailable ActionCode = 5
 	// send Job to Consumer
-	SendJob ActionCode = 6
+	SendJob   ActionCode = 6
+	AcceptJob ActionCode = 7
 )
 
 type Message struct {
 	Topic      string     `json:"topic"`
 	ActionCode ActionCode `json:"request"`
+	Offset     int        `json:"offset"`
 	Content    []byte     `json:"content"`
 }
 
@@ -38,4 +40,8 @@ func GetIsAvailableMessage(isAvailable bool) (Message, error) {
 		ActionCode: IsAvailable,
 		Content:    isAvailableB,
 	}, nil
+}
+
+func GetIsHandlingMessage(topic string, offset int) {
+
 }

@@ -30,7 +30,6 @@ func (socketCtrl *SocketCtrl) HandleBroker(conn *websocket.Conn) {
 }
 
 func (socketCtrl *SocketCtrl) HandleWatch(conn *websocket.Conn) {
-	conn.Write([]byte("hello"))
 	time.Sleep(time.Second)
 	socketCtrl.Broker.AddWatcher(conn)
 	fmt.Println("client added")
