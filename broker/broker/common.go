@@ -45,6 +45,7 @@ type Topic struct {
 	// ConsumerCients []*Client
 	ConsumerCients map[*Client]bool
 	ReaderIndex    int
+	m              *sync.Mutex
 }
 
 type PingParameter struct {
@@ -60,7 +61,7 @@ type BrokerParameters struct {
 type Broker struct {
 	Clients    map[*Client]bool
 	Watcher    map[*Watcher]bool
-	Topics     map[string]Topic
+	Topics     map[string]*Topic
 	Parameters BrokerParameters
 	m          *sync.Mutex
 }
@@ -69,7 +70,7 @@ func NewBroker() *Broker {
 	broker = &Broker{
 		Clients: map[*Client]bool{},
 		Watcher: map[*Watcher]bool{},
-		Topics:  map[string]Topic{},
+		Topics:  map[string]*Topic{},
 		Parameters: BrokerParameters{
 			Ping: PingParameter{
 				IntervalAfterPing: time.Second * 1,

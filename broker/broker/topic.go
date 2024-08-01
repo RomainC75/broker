@@ -4,14 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"shared/broker_dto"
+	"sync"
 
 	"github.com/sirupsen/logrus"
 )
 
-func NewTopic() Topic {
-	return Topic{
+func NewTopic() *Topic {
+	return &Topic{
 		Content:        []Message{},
 		ConsumerCients: map[*Client]bool{},
+		m:              &sync.Mutex{},
 	}
 }
 

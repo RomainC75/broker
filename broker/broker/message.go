@@ -1,6 +1,7 @@
 package broker
 
 import (
+	"errors"
 	"fmt"
 	"shared/broker_dto"
 
@@ -24,6 +25,17 @@ func (b *Broker) addMessage(message broker_dto.Message) {
 	topic = b.Topics[message.Topic]
 	logrus.Warn("CHECK : ", len(topic.Content))
 
+}
+
+func (b *Broker) SetJobToAccepted(topic string, offset int) error {
+	data, ok := b.Topics[topic]
+	if !ok {
+		return errors.New("topic not found ")
+	}
+	data.m.Lock()
+	data.Content[offset].IsHandled = true
+	data.m.Unlock()
+	return nil
 }
 
 func (b *Broker) isTopicExists(name string) bool {

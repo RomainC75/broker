@@ -31,7 +31,7 @@ type TopicMapDto map[string]TopicDto
 func ToTopicsDtoToSend(broker *Broker) map[string]TopicDto {
 	topics := make(map[string]TopicDto)
 	for topicName, topic := range broker.Topics {
-		topics[topicName] = ToTopicDto(topic)
+		topics[topicName] = ToTopicDto(*topic)
 	}
 	return topics
 }
