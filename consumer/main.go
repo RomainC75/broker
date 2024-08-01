@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"producer/conf"
 	message_broker "shared/broker"
 	"sync"
@@ -11,7 +12,6 @@ import (
 var (
 	u      = url.URL{Scheme: "ws", Host: "localhost:3005", Path: "/ws"}
 	origin = "http://localhost"
-	topic  = "my_topic"
 )
 
 func main() {
@@ -21,6 +21,7 @@ func main() {
 	wg.Add(1)
 
 	mb_conn := message_broker.NewConn(u, origin)
+	topic := os.Getenv("BROKER_TOPIC")
 	mb_conn.Subscribe(topic)
 
 	mb_conn.GoHandleJobs(jobHandler)

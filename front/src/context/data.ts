@@ -1,0 +1,1 @@
+export const dataJson = '{"my-topic":{"content":[{"key":"","value":"hello","is_sent":false,"is_handled":false}],"consumer_clients":[],"reader_index":0},"my_topic":{"content":[],"consumer_clients":[{"ping":{"time":"2024-08-01T09:47:58.184168+02:00","is_ping_sent":false,"is_pong":false,"retry":0},"topics":null,"is_available":false}],"reader_index":0}}'

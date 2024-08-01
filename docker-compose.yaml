@@ -1,35 +1,19 @@
 services:
-  zookeeper:
-    platform: linux/amd64
-    image: confluentinc/cp-zookeeper:latest
+  front:
+    container_name: front_watcher
+    build:
+      context: ./front
+      dockerfile: Dockerfile
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      # - VITE_API_URL=${VITE_API_URL}
+      # - VITE_API_AUDIENCE_ID=${VITE_API_AUDIENCE_ID}
+      # - VITE_API_TENANT_ID=${VITE_API_TENANT_ID}
+      - BROKER_HOST=${BROKER_HOST}
+      - BROKER_PORT=${BROKER_PORT}
+      - BROKER_TOPIC=${BROKER_TOPIC}
+    volumes:
+      - ./front/src:/app/src
+      - ./common:/app/src/common
     ports:
-      - "22181:2181"
-
-  kafka:
-    platform: linux/amd64
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper
-    ports:
-      - "29092:29092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      TOPIC_AUTO_CREATE: 'true'
-
-  kafdrop:
-    image: obsidiandynamics/kafdrop:3.31.0
-    ports:
-      - "9000:9000"
-    environment:
-      KAFKA_BROKERCONNECT: "kafka:9092"
-      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
-    depends_on:
-      - "kafka"
+      - 5173:${FRONT_PORT}
+    network_mode: host
