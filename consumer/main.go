@@ -34,6 +34,7 @@ func main() {
 }
 
 func jobHandler(message []byte) bool {
+	time.Sleep(time.Second * 3)
 	fmt.Println("--- GOT MESSAGE : ", string(message))
 	return true
 }

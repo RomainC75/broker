@@ -7,6 +7,7 @@ import (
 	"shared/utils"
 	"sync"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
@@ -22,7 +23,9 @@ func (b *Broker) AddClient(conn *websocket.Conn) {
 }
 
 func (b *Broker) RemoveClient(client *Client) {
+	b.m.Lock()
 	b.Clients[client] = false
+	b.m.Unlock()
 }
 
 // * =======  LOOP =======
@@ -33,10 +36,9 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 			msg := make([]byte, 2048)
 			_, err := client.Conn.Read(msg)
 			newMsg := utils.CleanByte(msg)
-			fmt.Println("------------------------NEW MESSAAGE RECEIVED----------------------------")
+
 			if err != nil {
-				fmt.Println("error trying to read socket message", err.Error())
-				// remove client/ stop parent & current function
+				logrus.Error("error trying to read socket message", err.Error())
 				b.RemoveClient(client)
 				wg.Done()
 				return
@@ -46,19 +48,19 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 				if err != nil {
 					fmt.Println("error trying to unmarshal request : ", err.Error())
 				}
-				// utils.PrettyDisplay("request", messageContent)
+
+				// *  CHOICE  * //
+
 				switch messageContent.ActionCode {
 				case broker_dto.UnSubscribe:
-					fmt.Println("trying to unsubscribe")
+					b.removeClientFromTopic(messageContent.Topic, client)
 				case broker_dto.Subscribe:
-					fmt.Printf("trying to subscribe to topic : %s\n", messageContent.Topic)
 					isTopicExist := b.isTopicExists(messageContent.Topic)
 					if !isTopicExist {
 						b.Topics[messageContent.Topic] = NewTopic()
 					}
 					b.addClientToTopic(messageContent.Topic, client)
 				case broker_dto.SendMessage:
-					fmt.Println("tying to push message into queue")
 					b.addMessage(messageContent)
 				case broker_dto.IsAvailable:
 					var isAvailableDto broker_dto.IsAvailableContent
@@ -71,8 +73,6 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 					b.SetJobToAccepted(messageContent.Topic, messageContent.Offset)
 				}
 			}
-
 		}
-
 	}()
 }

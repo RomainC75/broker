@@ -47,18 +47,12 @@ func (b *Broker) removeClientFromTopic(topic string, client *Client) error {
 	}
 }
 
-// ====TOPIC====
 func (t *Topic) SendJobToAvailableClient(topicName string) {
-	// logrus.Warn("TRYING TO SEND TO ", topicName, len(t.ConsumerCients))
 	for c := range t.ConsumerCients {
-		// logrus.Infof("is client available : %t\n", c.IsAvailable)
 		if c.IsAvailable {
 			var nextJob []byte
 			for i, jobContent := range t.Content {
-				// logrus.Warn("potential job : ")
-				// utils.PrettyDisplay("job", jobContent)
 				if !jobContent.IsSent && !jobContent.IsHandled {
-					// logrus.Info("FOUND 1 CLIENT AVAILABLE")
 					nextJob = jobContent.Value
 					t.Content[i].IsSent = true
 					message := broker_dto.Message{
@@ -79,7 +73,6 @@ func (t *Topic) SendJobToAvailableClient(topicName string) {
 					break
 				}
 			}
-
 		}
 	}
 }
