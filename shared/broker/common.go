@@ -89,8 +89,8 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 			msg := make([]byte, 2048)
 			_, err := c.conn.Read(msg)
 			if err != nil {
-				fmt.Println("error trying to read the conn")
 				c.conn.Close()
+				logrus.Error("error trying to read the conn")
 				return
 			}
 

@@ -1,0 +1,26 @@
+"filename", "language", "Go Module File", "Go", "Go Checksum File", "YAML", "Properties", "Docker", "comment", "blank", "total"
+"/Users/rom/dev/go/broker/broker/.air.conf", "Properties", 0, 0, 0, 0, 22, 0, 15, 4, 41
+"/Users/rom/dev/go/broker/broker/Dockerfile", "Docker", 0, 0, 0, 0, 0, 4, 0, 0, 4
+"/Users/rom/dev/go/broker/broker/api/common.go", "Go", 0, 49, 0, 0, 0, 0, 1, 14, 64
+"/Users/rom/dev/go/broker/broker/api/controllers/socket.controller.go", "Go", 0, 28, 0, 0, 0, 0, 4, 7, 39
+"/Users/rom/dev/go/broker/broker/api/routing/router.go", "Go", 0, 9, 0, 0, 0, 0, 0, 3, 12
+"/Users/rom/dev/go/broker/broker/api/routing/routes/hello.route.go", "Go", 0, 12, 0, 0, 0, 0, 0, 3, 15
+"/Users/rom/dev/go/broker/broker/api/routing/routes/socket.route.go", "Go", 0, 13, 0, 0, 0, 0, 0, 5, 18
+"/Users/rom/dev/go/broker/broker/broker/broker.go", "Go", 0, 12, 0, 0, 0, 0, 0, 3, 15
+"/Users/rom/dev/go/broker/broker/broker/broker_export.dto.go", "Go", 0, 63, 0, 0, 0, 0, 6, 11, 80
+"/Users/rom/dev/go/broker/broker/broker/client.go", "Go", 0, 34, 0, 0, 0, 0, 0, 7, 41
+"/Users/rom/dev/go/broker/broker/broker/common.go", "Go", 0, 110, 0, 0, 0, 0, 29, 25, 164
+"/Users/rom/dev/go/broker/broker/broker/handler.go", "Go", 0, 68, 0, 0, 0, 0, 3, 8, 79
+"/Users/rom/dev/go/broker/broker/broker/message.go", "Go", 0, 37, 0, 0, 0, 0, 0, 8, 45
+"/Users/rom/dev/go/broker/broker/broker/topic.go", "Go", 0, 67, 0, 0, 0, 0, 11, 8, 86
+"/Users/rom/dev/go/broker/broker/broker/watch.go", "Go", 0, 51, 0, 0, 0, 0, 4, 8, 63
+"/Users/rom/dev/go/broker/broker/config/common.go", "Go", 0, 18, 0, 0, 0, 0, 10, 8, 36
+"/Users/rom/dev/go/broker/broker/config/config_type.go", "Go", 0, 4, 0, 0, 0, 0, 6, 5, 15
+"/Users/rom/dev/go/broker/broker/go.mod", "Go Module File", 12, 0, 0, 0, 0, 0, 0, 5, 17
+"/Users/rom/dev/go/broker/broker/go.sum", "Go Checksum File", 0, 0, 16, 0, 0, 0, 0, 1, 17
+"/Users/rom/dev/go/broker/broker/main.go", "Go", 0, 7, 0, 0, 0, 0, 0, 3, 10
+"/Users/rom/dev/go/broker/broker/test/envConvertor_test_cases.go", "Go", 0, 8, 0, 0, 0, 0, 0, 2, 10
+"/Users/rom/dev/go/broker/broker/tygo.yaml", "YAML", 0, 0, 0, 9, 0, 0, 1, 0, 10
+"/Users/rom/dev/go/broker/broker/utils/envConvertor.go", "Go", 0, 34, 0, 0, 0, 0, 1, 4, 39
+"/Users/rom/dev/go/broker/broker/utils/envConvertor_test.go", "Go", 0, 23, 0, 0, 0, 0, 0, 4, 27
+"Total", "-", 12, 647, 16, 9, 22, 4, 91, 146, 947

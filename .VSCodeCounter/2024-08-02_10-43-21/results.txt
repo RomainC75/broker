@@ -1,0 +1,64 @@
+Date : 2024-08-02 10:43:21
+Directory : /Users/rom/dev/go/broker/broker
+Total : 24 files,  710 codes, 91 comments, 146 blanks, all 947 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Go               |         19 |        647 |         75 |        136 |        858 |
+| Properties       |          1 |         22 |         15 |          4 |         41 |
+| Go Checksum File |          1 |         16 |          0 |          1 |         17 |
+| Go Module File   |          1 |         12 |          0 |          5 |         17 |
+| YAML             |          1 |          9 |          1 |          0 |         10 |
+| Docker           |          1 |          4 |          0 |          0 |          4 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                 | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                    |         24 |        710 |         91 |        146 |        947 |
+| . (Files)                                                            |          6 |         70 |         16 |         13 |         99 |
+| api                                                                  |          5 |        111 |          5 |         32 |        148 |
+| api (Files)                                                          |          1 |         49 |          1 |         14 |         64 |
+| api/controllers                                                      |          1 |         28 |          4 |          7 |         39 |
+| api/routing                                                          |          3 |         34 |          0 |         11 |         45 |
+| api/routing (Files)                                                  |          1 |          9 |          0 |          3 |         12 |
+| api/routing/routes                                                   |          2 |         25 |          0 |          8 |         33 |
+| broker                                                               |          8 |        442 |         53 |         78 |        573 |
+| config                                                               |          2 |         22 |         16 |         13 |         51 |
+| test                                                                 |          1 |          8 |          0 |          2 |         10 |
+| utils                                                                |          2 |         57 |          1 |          8 |         66 |
++----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                             | language         | code       | comment    | blank      | total      |
++----------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| /Users/rom/dev/go/broker/broker/.air.conf                            | Properties       |         22 |         15 |          4 |         41 |
+| /Users/rom/dev/go/broker/broker/Dockerfile                           | Docker           |          4 |          0 |          0 |          4 |
+| /Users/rom/dev/go/broker/broker/api/common.go                        | Go               |         49 |          1 |         14 |         64 |
+| /Users/rom/dev/go/broker/broker/api/controllers/socket.controller.go | Go               |         28 |          4 |          7 |         39 |
+| /Users/rom/dev/go/broker/broker/api/routing/router.go                | Go               |          9 |          0 |          3 |         12 |
+| /Users/rom/dev/go/broker/broker/api/routing/routes/hello.route.go    | Go               |         12 |          0 |          3 |         15 |
+| /Users/rom/dev/go/broker/broker/api/routing/routes/socket.route.go   | Go               |         13 |          0 |          5 |         18 |
+| /Users/rom/dev/go/broker/broker/broker/broker.go                     | Go               |         12 |          0 |          3 |         15 |
+| /Users/rom/dev/go/broker/broker/broker/broker_export.dto.go          | Go               |         63 |          6 |         11 |         80 |
+| /Users/rom/dev/go/broker/broker/broker/client.go                     | Go               |         34 |          0 |          7 |         41 |
+| /Users/rom/dev/go/broker/broker/broker/common.go                     | Go               |        110 |         29 |         25 |        164 |
+| /Users/rom/dev/go/broker/broker/broker/handler.go                    | Go               |         68 |          3 |          8 |         79 |
+| /Users/rom/dev/go/broker/broker/broker/message.go                    | Go               |         37 |          0 |          8 |         45 |
+| /Users/rom/dev/go/broker/broker/broker/topic.go                      | Go               |         67 |         11 |          8 |         86 |
+| /Users/rom/dev/go/broker/broker/broker/watch.go                      | Go               |         51 |          4 |          8 |         63 |
+| /Users/rom/dev/go/broker/broker/config/common.go                     | Go               |         18 |         10 |          8 |         36 |
+| /Users/rom/dev/go/broker/broker/config/config_type.go                | Go               |          4 |          6 |          5 |         15 |
+| /Users/rom/dev/go/broker/broker/go.mod                               | Go Module File   |         12 |          0 |          5 |         17 |
+| /Users/rom/dev/go/broker/broker/go.sum                               | Go Checksum File |         16 |          0 |          1 |         17 |
+| /Users/rom/dev/go/broker/broker/main.go                              | Go               |          7 |          0 |          3 |         10 |
+| /Users/rom/dev/go/broker/broker/test/envConvertor_test_cases.go      | Go               |          8 |          0 |          2 |         10 |
+| /Users/rom/dev/go/broker/broker/tygo.yaml                            | YAML             |          9 |          1 |          0 |         10 |
+| /Users/rom/dev/go/broker/broker/utils/envConvertor.go                | Go               |         34 |          1 |          4 |         39 |
+| /Users/rom/dev/go/broker/broker/utils/envConvertor_test.go           | Go               |         23 |          0 |          4 |         27 |
+| Total                                                                |                  |        710 |         91 |        146 |        947 |
++----------------------------------------------------------------------+------------------+------------+------------+------------+------------+
