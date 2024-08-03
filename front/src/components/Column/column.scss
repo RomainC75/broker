@@ -1,11 +1,11 @@
 .Column{
-    max-width: 300px;
+    max-width: 450px;
     white-space: nowrap;
-    overflow: hidden;
     & > div:first-child{
         font-weight: 900;
     } 
     & > * {
+        overflow: hidden;
         height: 2rem;
     }
 }
