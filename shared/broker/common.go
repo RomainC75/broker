@@ -61,7 +61,7 @@ func (c *Connection) Subscribe(topic string) {
 	c.SendMessage(b)
 }
 
-func (c *Connection) Produce(i int, topic string, message []byte) {
+func (c *Connection) Produce(topic string, message []byte) {
 	fmt.Println("produce : ", message)
 	// to produce messages
 	if connection == nil {
