@@ -84,7 +84,7 @@ func (c *Connection) GoListen(topic string) {
 			// shared.CustomBodyValidator()
 			mb_Conn := message_broker.GetConnection()
 
-			mb_Conn.Produce(1, topic, []byte("message from the producer"))
+			mb_Conn.Produce(topic, []byte("message from the producer"))
 			time.Sleep(time.Second)
 
 		}
