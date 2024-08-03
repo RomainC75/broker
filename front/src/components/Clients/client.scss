@@ -1,0 +1,12 @@
+.Clients{
+
+    & > .client{
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        & div {
+            display:flex;
+            gap:2rem;
+        }
+    }
+}
