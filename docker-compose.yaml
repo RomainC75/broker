@@ -20,6 +20,9 @@ services:
       - ./shared:/shared
     depends_on:
       - broker
+    deploy:
+      mode: replicated
+      replicas: 2
 
   consumer:
     build:
@@ -31,6 +34,9 @@ services:
       - ./shared:/shared
     depends_on:
       - producer
+    deploy:
+      mode: replicated
+      replicas: 2
 
   front:
     container_name: front_watcher

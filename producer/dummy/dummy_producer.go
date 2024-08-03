@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func GoLoopProducer(topicName string, fn func(string, []byte), t time.Duration, ctx context.Context) {
+func GoLoopProducer(producerName string, topicName string, fn func(string, []byte), t time.Duration, ctx context.Context) {
 	go func() {
 		index := 0
 		for {
@@ -14,7 +14,7 @@ func GoLoopProducer(topicName string, fn func(string, []byte), t time.Duration, 
 			case <-ctx.Done():
 				return
 			default:
-				fn(topicName, []byte(fmt.Sprintf("message - %d", index)))
+				fn(topicName, []byte(fmt.Sprintf("%s : message - %d", producerName, index)))
 				index++
 				time.Sleep(t)
 			}

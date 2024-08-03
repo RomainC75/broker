@@ -113,9 +113,8 @@ func GetBroker() *Broker {
 }
 
 func (b *Broker) scanTopicsAndSend() {
-	logrus.Trace("SCANNER")
 	for topicName, topic := range b.Topics {
-		logrus.Infof("==> %s : consmrs : %d / queue / %d \n", topicName, len(topic.ConsumerCients), len(topic.Content))
+		// logrus.Infof("==> %s : consmrs : %d / queue / %d \n", topicName, len(topic.ConsumerCients), len(topic.Content))
 		if len(topic.Content) > 0 {
 			logrus.Warning("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
 			topic.SendJobToAvailableClient(topicName)

@@ -101,6 +101,7 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 				fmt.Println("error trying to unmarshal request : ", err.Error())
 			}
 			utils.PrettyDisplay("CONSUMER", messageContent)
+			logrus.Info(string(messageContent.Content))
 
 			switch messageContent.ActionCode {
 			// !! should be a separate go routine

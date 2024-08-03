@@ -15,8 +15,8 @@ const socket = new WebSocket(WS_URL)
 
 function SocketProviderWrapper(props: PropsWithChildren) {
   const [myState, setMyState] = useState<number>(3);
-  const [data, setData] = useState<TopicMapDto | null>()
-  // const [data, setData] = useState<TopicMapDto | null>(JSON.parse(dataJson))
+  // const [data, setData] = useState<TopicMapDto | null>()
+  const [data, setData] = useState<TopicMapDto | null>(JSON.parse(dataJson))
   
   
 
