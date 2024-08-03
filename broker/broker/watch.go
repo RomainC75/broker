@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"shared/config"
 	"sync"
 	"time"
 
@@ -19,6 +20,7 @@ func NewWatcher(conn *websocket.Conn) *Watcher {
 }
 
 func (b *Broker) LaunchWatcherLoop(ctx context.Context) {
+	cfg := config.Getenv()
 	go func() {
 		for {
 			select {
@@ -26,7 +28,7 @@ func (b *Broker) LaunchWatcherLoop(ctx context.Context) {
 				return
 			default:
 				b.BroadcastInfosToWatchers()
-				time.Sleep(time.Second * 2)
+				time.Sleep(time.Millisecond * time.Duration(cfg.BrokerWatcherFrequenceMs))
 			}
 		}
 	}()

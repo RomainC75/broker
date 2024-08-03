@@ -3,13 +3,13 @@ package api
 import (
 	"broker/api/routing"
 	"broker/broker"
-	"broker/config"
 	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"shared/config"
 	"syscall"
 	"time"
 )
@@ -28,20 +28,21 @@ func GetRouter() *http.ServeMux {
 func Serve() {
 
 	config.SetEnv()
-	conf := config.Getenv()
+	cfg := config.Getenv()
+
 	Init()
 	mux = GetRouter()
 
 	// mux.ListenAndServe(":8080", nil)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%v", conf.BrokerPort),
+		Addr:    fmt.Sprintf(":%v", cfg.BrokerPort),
 		Handler: mux,
 	}
 
 	go func() {
-		fmt.Printf("====> listening to port : %s\n", conf.BrokerPort)
-		http.ListenAndServe(fmt.Sprintf(":%s", conf.BrokerPort), mux)
+		fmt.Printf("====> listening to port : %s\n", cfg.BrokerPort)
+		http.ListenAndServe(fmt.Sprintf(":%s", cfg.BrokerPort), mux)
 	}()
 
 	quit := make(chan os.Signal)
