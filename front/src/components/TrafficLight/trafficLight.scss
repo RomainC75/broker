@@ -1,0 +1,20 @@
+.TrafficLight{
+    display: flex;
+    align-items:center;
+    & p {
+        font-weight: bold;
+    }
+    & > .light{
+        width: 10px;
+        height: 10px;
+        border-radius:100%;
+        margin-left: 1rem;;
+        &.green{
+            background-color: green;
+        }
+        &.red{
+            background-color: red;
+        }
+    }
+}
+

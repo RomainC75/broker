@@ -1,22 +1,17 @@
-import React from 'react'
-import { TopicDto } from '../../@types/back_types'
-import Content from '../Content/Content';
+import React from "react";
+import { TopicDto } from "../../@types/back_types";
+import Content from "../Content/Content";
 
-interface ITopic{
-    topic: TopicDto;
+interface ITopic {
+  topic: TopicDto;
 }
 
-const Topic = ({topic}: ITopic) => {
+const Topic = ({ topic }: ITopic) => {
   return (
-    <div>
-        <div>
-            <p>content</p>
-            {topic.content.map((cont, index)=>
-                <Content topicName={`${index}`} messages={cont}/>
-            )}
-        </div>
+    <div className="Topic">
+      <Content messages={topic.content} />
     </div>
-  )
-}
+  );
+};
 
-export default Topic
+export default Topic;
