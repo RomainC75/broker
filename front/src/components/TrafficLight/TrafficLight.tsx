@@ -2,15 +2,13 @@ import React from 'react'
 import './trafficLight.scss'
 
 interface ITrafficLight{
-    name: string;
-    isGood: boolean;
+    boolValue: boolean;
 }
 
-const TrafficLight = ({name, isGood}: ITrafficLight) => {
+const TrafficLight = ({boolValue}: ITrafficLight) => {
   return (
     <div className='TrafficLight'>
-        <p>{name} : </p>
-        <div className={`light ${isGood ? "green":"red"}`}></div>
+        <div className={`light ${boolValue ? "green":"red"}`}></div>
     </div>
   )
 }

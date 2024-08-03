@@ -1,16 +1,6 @@
 .Content{
-    &_message{
-        margin-bottom: 1rem;;
-        & .indicator{
-            display:flex;
-            & >p{
-                font-weight: 900;
-                margin-right: 1rem;;
-            }
-            & > div{
-                font-style: italic;
-            }
-        }
-
-    }
+    display: flex;
+    gap:1rem;
+    max-height: 400px;
+    overflow-y:scroll;
 }
