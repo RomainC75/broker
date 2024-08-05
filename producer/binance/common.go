@@ -3,12 +3,12 @@ package binance
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/url"
-	message_broker "shared/broker"
-	"time"
+	binance_dto "producer/binance/dto"
+	"producer/utils"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
@@ -55,13 +55,14 @@ func NewConn() *Connection {
 	return connection
 }
 
-func (c *Connection) GoListen(topic string) {
+func (c *Connection) GoListen(topic string, ctx context.Context) {
 
 	message := RequestParams{
 		Id:     subscribeId,
 		Method: "SUBSCRIBE",
 		Params: []string{
-			"btcusdt@aggTrade",
+			// "btcusdt@aggTrade",
+			// "ethusdt@aggTrade",
 			"btcusdt@depth",
 		},
 	}
@@ -74,18 +75,37 @@ func (c *Connection) GoListen(topic string) {
 	c.conn.Write(b)
 	go func() {
 		defer c.conn.Close()
-		for {
-			var response = make([]byte, 40_000)
-			n, err := c.conn.Read(response)
-			if err != nil {
-				panic(err)
-			}
-			fmt.Println("=> ", string(response[:n]))
-			// shared.CustomBodyValidator()
-			mb_Conn := message_broker.GetConnection()
+		i := 0
 
-			mb_Conn.Produce(topic, []byte("message from the producer"))
-			time.Sleep(time.Second)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				var response = make([]byte, 1_000_000)
+				n, err := c.conn.Read(response)
+				logrus.Info("--> N ", n)
+				if err != nil {
+					panic(err)
+				}
+				// fmt.Println("=> ", string(response[:n]))
+				logrus.Infof("%d-> %s\n", i, string(response[:n]))
+
+				var binanceDto binance_dto.BinanceDepthDto
+				err = json.Unmarshal(response[:n], &binanceDto)
+				if err != nil {
+					logrus.Warn(err.Error())
+					continue
+				}
+				utils.PrettyDisplay(binanceDto)
+
+				// shared.CustomBodyValidator()
+				// mb_Conn := message_broker.GetConnection()
+
+				// mb_Conn.Produce(topic, []byte("message from the producer"))
+				// time.Sleep(time.Second)
+				i++
+			}
 
 		}
 	}()
