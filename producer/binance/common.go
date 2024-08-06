@@ -9,7 +9,6 @@ import (
 	binance_dto "shared/binance/dto"
 	message_broker "shared/broker"
 	"shared/config"
-	"shared/utils"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -119,7 +118,6 @@ func (c *ProducerConnection) GoListen(topic string, ctx context.Context) {
 }
 
 func (c *ProducerConnection) handleBinanceMessage(response []byte, responseLength int) error {
-	fmt.Println("=> ", string(response[:responseLength]))
 	logrus.Infof("%d-> %s\n", string(response[:responseLength]))
 
 	var binanceDto binance_dto.BinanceAggTradeDto
@@ -127,11 +125,15 @@ func (c *ProducerConnection) handleBinanceMessage(response []byte, responseLengt
 	if err != nil {
 		return err
 	}
-	utils.PrettyDisplay("binance DTO", binanceDto)
 	logrus.Warn("---->", binanceDto.PriceChange)
 
-	// shared.CustomBodyValidator()
-	// mb_Conn := message_broker.GetProducerConnection()
+	// * send to broker
+	b, err := json.Marshal(binanceDto)
+	if err != nil {
+		logrus.Error("error trying to marshal message for broker")
+	}
+	conf := config.Getenv()
+	c.broker.Produce(conf.BrokerTopic, b)
 
 	// mb_Conn.Produce(topic, []byte("message from the producer"))
 	// time.Sleep(time.Second)

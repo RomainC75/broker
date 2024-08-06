@@ -61,7 +61,7 @@ func (c *Connection) Subscribe(topic string) {
 	c.SendMessage(b)
 }
 
-func (c *Connection) Produce(topic string, message []byte) {
+func (c *Connection) Produce(topic string, message []byte) error {
 	fmt.Println("produce : ", message)
 	// to produce messages
 	if connection == nil {
@@ -75,12 +75,15 @@ func (c *Connection) Produce(topic string, message []byte) {
 
 	b, err := json.Marshal(mess)
 	if err != nil {
-		fmt.Println("error trying to marshall broker_dto", err.Error())
+		logrus.Errorf("error trying to marshall broker_dto %s\n", err.Error())
+		return err
 	}
 	_, err = connection.conn.Write(b)
 	if err != nil {
-		log.Fatal("failed to write messages:", err.Error())
+		logrus.Errorf("failed to write messages: %s\n", err.Error())
+		return err
 	}
+	return nil
 }
 
 func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
