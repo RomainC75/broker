@@ -6,25 +6,26 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"producer/utils"
 	binance_dto "shared/binance/dto"
+	message_broker "shared/broker"
 	"shared/config"
+	"shared/utils"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
-var binanceconnection *BinanceConnection
+var producerconnection *ProducerConnection
 
-type Connection struct {
+type BinanceConnection struct {
 	url    url.URL
 	config *websocket.Config
 	conn   *websocket.Conn
 }
 
-type BinanceConnection struct {
-	binance *Connection
-	broker  *Connection
+type ProducerConnection struct {
+	binance *BinanceConnection
+	broker  *message_broker.Connection
 }
 
 const (
@@ -42,7 +43,7 @@ var (
 	binanceUrl = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
 )
 
-func NewConn() *BinanceConnection {
+func NewConn() *ProducerConnection {
 	conf := config.Getenv()
 
 	binanceConnection, err := ConnectToSocket(binanceUrl)
@@ -52,19 +53,19 @@ func NewConn() *BinanceConnection {
 	}
 
 	brokerUrl := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/ws"}
-	brokerConnection, err := ConnectToSocket(brokerUrl)
+	brokerConnection := message_broker.NewConn(brokerUrl, "http://localhost")
 	if err != nil {
 		log.Fatal("error with brokerConnection")
 	}
 
-	binanceconnection = &BinanceConnection{
+	producerconnection = &ProducerConnection{
 		binance: binanceConnection,
 		broker:  brokerConnection,
 	}
-	return binanceconnection
+	return producerconnection
 }
 
-func ConnectToSocket(url url.URL) (*Connection, error) {
+func ConnectToSocket(url url.URL) (*BinanceConnection, error) {
 	config, err := websocket.NewConfig(url.String(), "http://localhost")
 	if err != nil {
 		return nil, err
@@ -74,14 +75,14 @@ func ConnectToSocket(url url.URL) (*Connection, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Connection{
+	return &BinanceConnection{
 		url:    url,
 		config: config,
 		conn:   conn,
 	}, nil
 }
 
-func (c *BinanceConnection) GoListen(topic string, ctx context.Context) {
+func (c *ProducerConnection) GoListen(topic string, ctx context.Context) {
 
 	message := RequestParams{
 		Id:     subscribeId,
@@ -96,18 +97,17 @@ func (c *BinanceConnection) GoListen(topic string, ctx context.Context) {
 	b, err := json.Marshal(message)
 	if err != nil {
 		log.Fatal("Failed to JSON Encode trade topics")
-		// return err
 	}
-	c.conn.Write(b)
+	c.binance.conn.Write(b)
 	go func() {
-		defer c.conn.Close()
+		defer c.binance.conn.Close()
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			default:
 				var response = make([]byte, 1024)
-				n, err := c.conn.Read(response)
+				n, err := c.binance.conn.Read(response)
 				logrus.Info("--> N ", n)
 				if err != nil {
 					panic(err)
@@ -118,7 +118,7 @@ func (c *BinanceConnection) GoListen(topic string, ctx context.Context) {
 	}()
 }
 
-func (c *BinanceConnection) handleBinanceMessage(response []byte, responseLength int) error {
+func (c *ProducerConnection) handleBinanceMessage(response []byte, responseLength int) error {
 	fmt.Println("=> ", string(response[:responseLength]))
 	logrus.Infof("%d-> %s\n", string(response[:responseLength]))
 
@@ -127,11 +127,11 @@ func (c *BinanceConnection) handleBinanceMessage(response []byte, responseLength
 	if err != nil {
 		return err
 	}
-	utils.PrettyDisplay(binanceDto)
+	utils.PrettyDisplay("binance DTO", binanceDto)
 	logrus.Warn("---->", binanceDto.PriceChange)
 
 	// shared.CustomBodyValidator()
-	// mb_Conn := message_broker.GetBinanceConnection()
+	// mb_Conn := message_broker.GetProducerConnection()
 
 	// mb_Conn.Produce(topic, []byte("message from the producer"))
 	// time.Sleep(time.Second)
