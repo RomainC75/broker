@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"producer/utils"
 	binance_dto "shared/binance/dto"
+	"shared/config"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -15,10 +16,15 @@ import (
 
 var binanceconnection *BinanceConnection
 
-type BinanceConnection struct {
+type Connection struct {
 	url    url.URL
 	config *websocket.Config
 	conn   *websocket.Conn
+}
+
+type BinanceConnection struct {
+	binance *Connection
+	broker  *Connection
 }
 
 const (
@@ -33,27 +39,46 @@ type RequestParams struct {
 }
 
 var (
-	u = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
+	binanceUrl = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
 )
 
 func NewConn() *BinanceConnection {
+	conf := config.Getenv()
 
-	config, err := websocket.NewConfig(u.String(), "http://localhost")
+	binanceConnection, err := ConnectToSocket(binanceUrl)
 	if err != nil {
-		log.Fatal("error with config: ", err.Error())
+		log.Fatal("error with binanceConnection")
+		return nil
+	}
+
+	brokerUrl := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/ws"}
+	brokerConnection, err := ConnectToSocket(brokerUrl)
+	if err != nil {
+		log.Fatal("error with brokerConnection")
+	}
+
+	binanceconnection = &BinanceConnection{
+		binance: binanceConnection,
+		broker:  brokerConnection,
+	}
+	return binanceconnection
+}
+
+func ConnectToSocket(url url.URL) (*Connection, error) {
+	config, err := websocket.NewConfig(url.String(), "http://localhost")
+	if err != nil {
+		return nil, err
 	}
 	ctx := context.Background()
 	conn, err := config.DialContext(ctx)
 	if err != nil {
-		log.Fatal("error trying to dial: ", err.Error())
+		return nil, err
 	}
-
-	binanceconnection = &BinanceConnection{
-		url:    u,
+	return &Connection{
+		url:    url,
 		config: config,
 		conn:   conn,
-	}
-	return binanceconnection
+	}, nil
 }
 
 func (c *BinanceConnection) GoListen(topic string, ctx context.Context) {
