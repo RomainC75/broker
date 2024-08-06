@@ -1,4 +1,4 @@
-package dto_utils
+package binance_utils
 
 import (
 	"bytes"

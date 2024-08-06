@@ -24,6 +24,7 @@ func SetEnv() {
 	(*config).BrokerHost = os.Getenv("BROKER_HOST")
 	(*config).BrokerPort = os.Getenv("BROKER_PORT")
 	(*config).BrokerTopic = os.Getenv("BROKER_TOPIC")
+	(*config).Tickers = os.Getenv("TICKERS")
 
 	interval := os.Getenv("BROKER_WATCHER_INTERVAL_MS")
 	intervalInt, err := strconv.Atoi(interval)

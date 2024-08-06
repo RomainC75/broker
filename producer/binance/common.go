@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	binance_utils "producer/dto/utils"
 	binance_dto "shared/binance/dto"
 	message_broker "shared/broker"
 	"shared/config"
@@ -82,15 +83,12 @@ func ConnectToSocket(url url.URL) (*BinanceConnection, error) {
 }
 
 func (c *ProducerConnection) GoListen(topic string, ctx context.Context) {
+	conf := config.Getenv()
 
 	message := RequestParams{
 		Id:     subscribeId,
 		Method: "SUBSCRIBE",
-		Params: []string{
-			// "btcusdt@aggTrade",
-			"ethusdt@aggTrade",
-			// "btcusdt@depth",
-		},
+		Params: binance_utils.GetAggTradeTickers(conf.Tickers),
 	}
 	//log.Println(message)
 	b, err := json.Marshal(message)
