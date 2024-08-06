@@ -3,6 +3,7 @@ package binance
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/url"
 	binance_dto "producer/binance/dto"
@@ -62,8 +63,8 @@ func (c *Connection) GoListen(topic string, ctx context.Context) {
 		Method: "SUBSCRIBE",
 		Params: []string{
 			// "btcusdt@aggTrade",
-			// "ethusdt@aggTrade",
-			"btcusdt@depth",
+			"ethusdt@aggTrade",
+			// "btcusdt@depth",
 		},
 	}
 	//log.Println(message)
@@ -88,16 +89,17 @@ func (c *Connection) GoListen(topic string, ctx context.Context) {
 				if err != nil {
 					panic(err)
 				}
-				// fmt.Println("=> ", string(response[:n]))
+				fmt.Println("=> ", string(response[:n]))
 				logrus.Infof("%d-> %s\n", i, string(response[:n]))
 
-				var binanceDto binance_dto.BinanceDepthDto
+				var binanceDto binance_dto.BinanceAggTradeDto
 				err = json.Unmarshal(response[:n], &binanceDto)
 				if err != nil {
 					logrus.Warn(err.Error())
 					continue
 				}
 				utils.PrettyDisplay(binanceDto)
+				logrus.Warn("---->", binanceDto.PriceChange)
 
 				// shared.CustomBodyValidator()
 				// mb_Conn := message_broker.GetConnection()
