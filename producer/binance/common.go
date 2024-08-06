@@ -6,16 +6,16 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	binance_dto "producer/binance/dto"
 	"producer/utils"
+	binance_dto "shared/binance/dto"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
-var connection *Connection
+var binanceconnection *BinanceConnection
 
-type Connection struct {
+type BinanceConnection struct {
 	url    url.URL
 	config *websocket.Config
 	conn   *websocket.Conn
@@ -36,7 +36,7 @@ var (
 	u = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
 )
 
-func NewConn() *Connection {
+func NewConn() *BinanceConnection {
 
 	config, err := websocket.NewConfig(u.String(), "http://localhost")
 	if err != nil {
@@ -48,15 +48,15 @@ func NewConn() *Connection {
 		log.Fatal("error trying to dial: ", err.Error())
 	}
 
-	connection = &Connection{
+	binanceconnection = &BinanceConnection{
 		url:    u,
 		config: config,
 		conn:   conn,
 	}
-	return connection
+	return binanceconnection
 }
 
-func (c *Connection) GoListen(topic string, ctx context.Context) {
+func (c *BinanceConnection) GoListen(topic string, ctx context.Context) {
 
 	message := RequestParams{
 		Id:     subscribeId,
@@ -76,39 +76,44 @@ func (c *Connection) GoListen(topic string, ctx context.Context) {
 	c.conn.Write(b)
 	go func() {
 		defer c.conn.Close()
-		i := 0
-
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			default:
-				var response = make([]byte, 1_000_000)
+				var response = make([]byte, 1024)
 				n, err := c.conn.Read(response)
 				logrus.Info("--> N ", n)
 				if err != nil {
 					panic(err)
 				}
-				fmt.Println("=> ", string(response[:n]))
-				logrus.Infof("%d-> %s\n", i, string(response[:n]))
-
-				var binanceDto binance_dto.BinanceAggTradeDto
-				err = json.Unmarshal(response[:n], &binanceDto)
-				if err != nil {
-					logrus.Warn(err.Error())
-					continue
-				}
-				utils.PrettyDisplay(binanceDto)
-				logrus.Warn("---->", binanceDto.PriceChange)
-
-				// shared.CustomBodyValidator()
-				// mb_Conn := message_broker.GetConnection()
-
-				// mb_Conn.Produce(topic, []byte("message from the producer"))
-				// time.Sleep(time.Second)
-				i++
+				c.handleBinanceMessage(response, n)
 			}
-
 		}
 	}()
 }
+
+func (c *BinanceConnection) handleBinanceMessage(response []byte, responseLength int) error {
+	fmt.Println("=> ", string(response[:responseLength]))
+	logrus.Infof("%d-> %s\n", string(response[:responseLength]))
+
+	var binanceDto binance_dto.BinanceAggTradeDto
+	err := json.Unmarshal(response[:responseLength], &binanceDto)
+	if err != nil {
+		return err
+	}
+	utils.PrettyDisplay(binanceDto)
+	logrus.Warn("---->", binanceDto.PriceChange)
+
+	// shared.CustomBodyValidator()
+	// mb_Conn := message_broker.GetBinanceConnection()
+
+	// mb_Conn.Produce(topic, []byte("message from the producer"))
+	// time.Sleep(time.Second)
+	return nil
+}
+
+// producerName := uuid.New()
+// topic := conf.BrokerTopic
+// mb_conn := message_broker.NewConn(u, origin)
+// dummy.GoLoopProducer(producerName.String(), topic, mb_conn.Produce, time.Second*2, ctx)
