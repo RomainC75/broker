@@ -2,6 +2,7 @@ package binance_dto
 
 import (
 	"reflect"
+	"shared/utils"
 )
 
 type BinanceAggTradeDto struct {
@@ -34,22 +35,22 @@ type ReverseBinanceAggTradeDto struct {
 	EventTime                  int64  `json:"event_time"`
 	Symbol                     string `json:"symbol"`
 	PriceChange                string `json:"price_change"`
-	PriceChangePercent         string `json:"price_change_percent"`
-	OpenPrice                  string `json:"open_price"`
-	HighPrice                  string `json:"high_price"`
+	PriceChangePercent         string `json:"price_change_percent,omitempty"`
+	OpenPrice                  string `json:"open_price,omitempty"`
+	HighPrice                  string `json:"high_price,omitempty"`
 	LastTradeID                int64  `json:"last_trade_id"`
-	LastPrice                  string `json:"last_price"`
-	WeightedAveragePrice       string `json:"weighted_average_price"`
-	TotalTradedBassAssetVolume string `json:"total_traded_bass_asset_volume"`
+	LastPrice                  string `json:"last_price,omitempty"`
+	WeightedAveragePrice       string `json:"weighted_average_price,omitempty"`
+	TotalTradedBassAssetVolume string `json:"total_traded_bass_asset_volume,omitempty"`
 	TotalTradedQuotAssetVolume string `json:"total_traded_quot_asset_volume"`
-	StatisticsOpenTime         int64  `json:"statistics_open_time"`
-	StatisticsClosTime         int64  `json:"statistics_close_time"`
+	StatisticsOpenTime         int64  `json:"statistics_open_time,omitempty"`
+	StatisticsClosTime         int64  `json:"statistics_close_time,omitempty"`
 	FirstTradeId               int64  `json:"first_trade_id"`
-	TotalNumberOfTrades        int64  `json:"total_number_of_trades"`
+	TotalNumberOfTrades        int64  `json:"total_number_of_trades,omitempty"`
 	AggregateTradeID           int64  `json:"aggregate_trade_id"`
-	BestAskedQty               string `json:"bestAsked_qty"`
+	BestAskedQty               string `json:"bestAsked_qty,omitempty"`
 	IsTheBuyerTheMarkerMaker   bool   `json:"is_the_buyer_the_marker_maker"`
-	Ignore                     bool   `json:"ignore"`
+	Ignore                     bool   `json:"ignore,omitempty"`
 	TradeTime                  int64  `json:"trade_time"`
 }
 
@@ -78,7 +79,9 @@ func ConvertToReverseBinanceAggTradeDto(bat BinanceAggTradeDto) (rBat ReverseBin
 			targetValue.Set(fieldValue)
 		}
 	}
+	utils.PrettyDisplay("aggTrade ", rBat)
 	return
+
 }
 
 func getKeysOfStruct(v reflect.Value) []string {
