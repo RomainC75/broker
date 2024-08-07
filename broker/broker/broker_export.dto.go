@@ -29,10 +29,10 @@ type TopicDto struct {
 
 type TopicMapDto map[string]TopicDto
 
-func ToTopicsDtoToSend(broker *Broker) map[string]TopicDto {
+func ToTopicsDtoToSend(broker *Broker, param WatcherParameter) map[string]TopicDto {
 	topics := make(map[string]TopicDto)
 	for topicName, topic := range broker.Topics {
-		topics[topicName] = ToTopicDto(*topic)
+		topics[topicName] = ToTopicDto(*topic, param)
 	}
 	return topics
 }
@@ -58,17 +58,21 @@ func ToConsumerClients(rawClients map[*Client]bool) []ClientDto {
 	return clients
 }
 
-func ToTopicDto(topic Topic) TopicDto {
+func ToTopicDto(topic Topic, param WatcherParameter) TopicDto {
 	return TopicDto{
-		Content:        ToMessageDto(topic.Content),
+		Content:        ToMessageDto(topic.Content, param),
 		ConsumerCients: ToConsumerClients(topic.ConsumerCients),
 		ReaderIndex:    topic.ReaderIndex,
 	}
 }
 
-func ToMessageDto(messages []Message) []MessageDto {
+func ToMessageDto(messages []Message, param WatcherParameter) []MessageDto {
 	dtoMessages := []MessageDto{}
-	for index, message := range messages {
+	var start int
+	if len(messages) > param.TopicContentLength {
+		start = len(messages) - param.TopicContentLength
+	}
+	for index, message := range messages[start:] {
 		dtoMessages = append(dtoMessages, MessageDto{
 			Index:     index,
 			Key:       string(message.Key),

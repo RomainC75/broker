@@ -32,4 +32,11 @@ func SetEnv() {
 		log.Fatal("BROKER_WATCHER_INTERVAL_MS not valid in .env file !!")
 	}
 	(*config).BrokerWatcherFrequenceMs = intervalInt
+
+	topicContentLength := os.Getenv("BROKER_WATCHER_TOPIC_CONTENT_LENGTH")
+	brockerWatcherTopicContentLength, err := strconv.Atoi(topicContentLength)
+	if err != nil {
+		log.Fatal("BROKER_WATCHER_TOPIC_CONTENT_LENGTH not valid in .env file !!")
+	}
+	(*config).BrockerWatcherTopicContentLength = brockerWatcherTopicContentLength
 }

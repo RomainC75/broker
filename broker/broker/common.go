@@ -3,6 +3,7 @@ package broker
 import (
 	"context"
 	"fmt"
+	"shared/config"
 	"sync"
 	"time"
 
@@ -54,8 +55,14 @@ type PingParameter struct {
 	MaxRetry          int
 }
 
+type WatcherParameter struct {
+	TopicContentLength       int
+	BrokerWatcherFrequenceMs int
+}
+
 type BrokerParameters struct {
-	Ping PingParameter
+	Ping    PingParameter
+	Watcher WatcherParameter
 }
 
 type Broker struct {
@@ -67,6 +74,7 @@ type Broker struct {
 }
 
 func NewBroker() *Broker {
+	conf := config.Getenv()
 	broker = &Broker{
 		Clients: map[*Client]bool{},
 		Watcher: map[*Watcher]bool{},
@@ -76,6 +84,10 @@ func NewBroker() *Broker {
 				IntervalAfterPing: time.Second * 1,
 				IntervalAfterPong: time.Second * 5,
 				MaxRetry:          3,
+			},
+			Watcher: WatcherParameter{
+				TopicContentLength:       conf.BrockerWatcherTopicContentLength,
+				BrokerWatcherFrequenceMs: conf.BrokerWatcherFrequenceMs,
 			},
 		},
 		m: &sync.Mutex{},
