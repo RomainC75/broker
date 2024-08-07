@@ -8,6 +8,7 @@ package broker
 // }
 
 type MessageDto struct {
+	Index     int    `json:"index"`
 	Key       string `json:"key"`
 	Value     string `json:"value"`
 	IsSent    bool   `json:"is_sent"`
@@ -67,8 +68,9 @@ func ToTopicDto(topic Topic) TopicDto {
 
 func ToMessageDto(messages []Message) []MessageDto {
 	dtoMessages := []MessageDto{}
-	for _, message := range messages {
+	for index, message := range messages {
 		dtoMessages = append(dtoMessages, MessageDto{
+			Index:     index,
 			Key:       string(message.Key),
 			Value:     string(message.Value),
 			IsSent:    message.IsSent,
