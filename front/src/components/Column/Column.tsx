@@ -1,8 +1,8 @@
 import React from "react";
 import { EColumnNames } from "../../@types/column";
-import { MessageDto } from "../../@types/back_types";
 import TrafficLight from "../TrafficLight/TrafficLight";
 import './column.scss'
+import { MessageDto } from "../../@types/broker.type";
 
 interface IColumn {
   columnName: EColumnNames;
