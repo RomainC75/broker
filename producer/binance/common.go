@@ -126,7 +126,8 @@ func (c *ProducerConnection) handleBinanceMessage(response []byte, responseLengt
 	logrus.Warn("---->", binanceDto.PriceChange)
 
 	// * send to broker
-	b, err := json.Marshal(binanceDto)
+	reversedBinanceDto := binance_dto.ConvertToReverseBinanceAggTradeDto(binanceDto)
+	b, err := json.Marshal(reversedBinanceDto)
 	if err != nil {
 		logrus.Error("error trying to marshal message for broker")
 	}
