@@ -74,7 +74,7 @@ func ToMessageDto(messages []Message, param WatcherParameter) []MessageDto {
 	}
 	for index, message := range messages[start:] {
 		dtoMessages = append(dtoMessages, MessageDto{
-			Index:     index,
+			Index:     start + index,
 			Key:       string(message.Key),
 			Value:     string(message.Value),
 			IsSent:    message.IsSent,
