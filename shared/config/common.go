@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	config_utils "shared/config/utils"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -24,7 +25,7 @@ func SetEnv() {
 	(*config).BrokerHost = os.Getenv("BROKER_HOST")
 	(*config).BrokerPort = os.Getenv("BROKER_PORT")
 	(*config).BrokerTopic = os.Getenv("BROKER_TOPIC")
-	(*config).Tickers = os.Getenv("TICKERS")
+	(*config).Tickers = config_utils.SeparateTickers(os.Getenv("TICKERS"))
 
 	interval := os.Getenv("BROKER_WATCHER_INTERVAL_MS")
 	intervalInt, err := strconv.Atoi(interval)

@@ -28,8 +28,8 @@ func main() {
 	wg.Add(1)
 
 	mb_conn := message_broker.NewConn(u, origin)
-	topic := conf.BrokerTopic
-	mb_conn.Subscribe(topic)
+
+	mb_conn.SubscribeTopics(conf.Tickers)
 
 	mb_conn.GoHandleJobs(jobHandler)
 

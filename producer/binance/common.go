@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	binance_utils "producer/dto/utils"
 	binance_dto "shared/binance/dto"
 	message_broker "shared/broker"
 	"shared/config"
+	config_utils "shared/config/utils"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -88,7 +88,7 @@ func (c *ProducerConnection) GoListen(topic string, ctx context.Context) {
 	message := RequestParams{
 		Id:     subscribeId,
 		Method: "SUBSCRIBE",
-		Params: binance_utils.GetAggTradeTickers(conf.Tickers),
+		Params: config_utils.GetAggTradesFromTickers(conf.Tickers),
 	}
 	//log.Println(message)
 	b, err := json.Marshal(message)

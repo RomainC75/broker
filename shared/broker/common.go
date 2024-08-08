@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"shared/broker_dto"
 	"shared/utils"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -48,17 +49,19 @@ func NewConn(u url.URL, origin string) *Connection {
 	return connection
 }
 
-func (c *Connection) Subscribe(topic string) {
-	message := broker_dto.Message{
-		Topic:      topic,
-		ActionCode: broker_dto.Subscribe,
+func (c *Connection) SubscribeTopics(topics []string) {
+	for _, topic := range topics {
+		message := broker_dto.Message{
+			Topic:      strings.ToUpper(topic),
+			ActionCode: broker_dto.Subscribe,
+		}
+		b, err := json.Marshal(message)
+		if err != nil {
+			// fmt.Println("=> ", err.Error())
+			fmt.Errorf("imposible to marshall this message : ", message)
+		}
+		c.SendMessage(b)
 	}
-	b, err := json.Marshal(message)
-	if err != nil {
-		// fmt.Println("=> ", err.Error())
-		fmt.Errorf("imposible to marshall this message : ", message)
-	}
-	c.SendMessage(b)
 }
 
 func (c *Connection) Produce(topic string, message []byte) error {
