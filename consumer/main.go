@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
+	binance_dto "shared/binance/dto"
 	message_broker "shared/broker"
 	"shared/config"
 	db "shared/db/sqlc"
 	"sync"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -19,6 +24,7 @@ func main() {
 
 	config.SetEnv()
 	db.Connect()
+	// store := db.NewStore(db.GetConnection())
 
 	conf := config.Getenv()
 
@@ -37,7 +43,38 @@ func main() {
 }
 
 func jobHandler(message []byte) bool {
-	time.Sleep(time.Second * 3)
+	store := db.DbStore
+
+	reverseBinanceAggTradeDto := binance_dto.ReverseBinanceAggTradeDto{}
+	err := json.Unmarshal(message, &reverseBinanceAggTradeDto)
+	if err != nil {
+		logrus.Error(err)
+	}
+
+	stockParam := ConvertAggToStockParam(reverseBinanceAggTradeDto)
+	ctx := context.Background()
+	_, err = (*store).CreateStock(ctx, stockParam)
+	if err != nil {
+		logrus.Errorf("cannot create stock", err)
+	}
 	fmt.Println("--- GOT MESSAGE : ", string(message))
 	return true
+}
+
+func ConvertAggToStockParam(aggT binance_dto.ReverseBinanceAggTradeDto) db.CreateStockParams {
+	eventTimestamp := time.Unix(aggT.EventTime/1000, (aggT.EventTime%1000)*int64(time.Millisecond))
+	tradeTimestamp := time.Unix(aggT.TradeTime/1000, (aggT.TradeTime%1000)*int64(time.Millisecond))
+	logrus.Warn("-----", eventTimestamp.GoString())
+	return db.CreateStockParams{
+		EventType:                  aggT.EventType,
+		EventTime:                  eventTimestamp,
+		Symbol:                     aggT.Symbol,
+		PriceChange:                aggT.PriceChange,
+		LastTradeID:                aggT.LastTradeID,
+		TotalTradedQuotAssetVolume: aggT.TotalTradedQuotAssetVolume,
+		AggregateTradeID:           aggT.AggregateTradeID,
+		IsTheBuyerTheMarkerMaker:   aggT.IsTheBuyerTheMarkerMaker,
+		Ignor:                      aggT.Ignore,
+		TradeTime:                  tradeTimestamp,
+	}
 }
