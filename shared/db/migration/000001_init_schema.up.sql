@@ -19,7 +19,7 @@ CREATE TABLE currencies (
     first_trade_id BIGINT NOT NULL,
     aggregate_trade_id BIGINT NOT NULL,
     is_the_buyer_the_marker_maker BOOLEAN NOT NULL,
-    ignor BOOLEAN NOT NULL,
+    is_ignore BOOLEAN NOT NULL,
     trade_time DATE NOT NULL
 );
 

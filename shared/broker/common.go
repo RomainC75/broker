@@ -55,17 +55,16 @@ func (c *Connection) Subscribe(topic string) {
 	}
 	b, err := json.Marshal(message)
 	if err != nil {
-		fmt.Println("=> ", err.Error())
-		fmt.Println("imposible to marshall this message : ", message)
+		// fmt.Println("=> ", err.Error())
+		fmt.Errorf("imposible to marshall this message : ", message)
 	}
 	c.SendMessage(b)
 }
 
 func (c *Connection) Produce(topic string, message []byte) error {
-	fmt.Println("produce : ", message)
 	// to produce messages
 	if connection == nil {
-		fmt.Println("no wriiter")
+		logrus.Error("no wriiter")
 	}
 	mess := broker_dto.Message{
 		Topic:      topic,
@@ -126,15 +125,15 @@ func (c *Connection) GoHandleJobs(handlerFn func([]byte) bool) {
 func (c Connection) SendIsAvailableInfo(isAvailable bool) {
 	message, err := broker_dto.GetIsAvailableMessage(isAvailable)
 	if err != nil {
-		fmt.Println("sendIsAvailableInfo : cannot get isAvailable message")
+		logrus.Warn("sendIsAvailableInfo : cannot get isAvailable message")
 	}
 	b, err := json.Marshal(message)
 	if err != nil {
-		fmt.Println("marshall : isAvailable response not possible")
+		logrus.Warn("marshall : isAvailable response not possible")
 	}
 	_, err = c.conn.Write(b)
 	if err != nil {
-		fmt.Println("response isAvailable not possible")
+		logrus.Warn("response isAvailable not possible")
 	}
 }
 
@@ -148,11 +147,11 @@ func (c Connection) SendAcceptJobMessage(topic string, offset int) {
 	utils.PrettyDisplay("SEND ACCEPT MEESSAGE ", message)
 	b, err := json.Marshal(message)
 	if err != nil {
-		fmt.Println("marshall : isAvailable response not possible")
+		logrus.Warn("marshall : isAvailable response not possible")
 	}
 	_, err = c.conn.Write(b)
 	if err != nil {
-		fmt.Println("accept job message sent !")
+		logrus.Warn("accept job message sent !")
 	}
 }
 
@@ -162,11 +161,11 @@ func (c Connection) SendPong() {
 	}
 	b, err := json.Marshal(msg)
 	if err != nil {
-		fmt.Printf("marshall : pong not possible")
+		logrus.Warn("marshall : pong not possible")
 	}
 	_, err = c.conn.Write(b)
 	if err != nil {
-		fmt.Printf("pong not possible")
+		logrus.Warn("pong not possible")
 	}
 }
 

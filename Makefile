@@ -11,7 +11,7 @@ migratedown:
 	migrate --path shared/db/migration --database "postgresql://admin:azerty@localhost:5432/cryptos?sslmode=disable" --verbose down
 
 sqlc:
-	cd server && sqlc generate
+	cd shared && sqlc generate && ./comment-cleaner.sh 
 
 test:
 	cd server && go test -v -cover ./...
