@@ -131,8 +131,7 @@ func (c *ProducerConnection) handleBinanceMessage(response []byte, responseLengt
 	if err != nil {
 		logrus.Error("error trying to marshal message for broker")
 	}
-	conf := config.Getenv()
-	c.broker.Produce(conf.BrokerTopic, b)
+	c.broker.Produce(binanceDto.Symbol, b)
 
 	// mb_Conn.Produce(topic, []byte("message from the producer"))
 	// time.Sleep(time.Second)
