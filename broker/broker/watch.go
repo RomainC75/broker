@@ -45,15 +45,12 @@ func (b *Broker) AddWatcher(conn *websocket.Conn) {
 
 func (b *Broker) BroadcastInfosToWatchers() {
 	dataToSent := ToTopicsDtoToSend(b, b.Parameters.Watcher)
-	// fmt.Println("watcher looop")
-	// utils.PrettyDisplay("PRETTY : ", dataToSent)
 	by, err := json.Marshal(dataToSent)
 	if err != nil {
 		logrus.Error(err.Error())
 	}
 
 	for w := range b.Watcher {
-		// w.Conn.Write(by)
 		_, err := w.Conn.Write(by)
 		if err != nil {
 			fmt.Println("error trying to write socket ", err.Error())

@@ -1,28 +1,28 @@
 services:
-  broker:
-    build:
-      dockerfile: Dockerfile
-      context: ./broker
-    volumes:
-      - ./broker:/app
-      - ./.env:/.env
-      - ./shared:/shared
-    ports:
-    - 3005:${BROKER_PORT}
+  # broker:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./broker
+  #   volumes:
+  #     - ./broker:/app
+  #     - ./.env:/.env
+  #     - ./shared:/shared
+  #   ports:
+  #   - 3005:${BROKER_PORT}
 
-  producer:
-    build:
-      dockerfile: Dockerfile
-      context: ./producer
-    volumes:
-      - ./producer:/app
-      - ./.env:/.env
-      - ./shared:/shared
-    depends_on:
-      - broker
-    deploy:
-      mode: replicated
-      replicas: 1
+  # producer:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./producer
+  #   volumes:
+  #     - ./producer:/app
+  #     - ./.env:/.env
+  #     - ./shared:/shared
+  #   depends_on:
+  #     - broker
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
 
   # consumer:
   #   build:
@@ -38,25 +38,41 @@ services:
   #     mode: replicated
   #     replicas: 1
 
-  front:
-    container_name: front_watcher
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-    environment:
-      # - VITE_API_URL=${VITE_API_URL}
-      # - VITE_API_AUDIENCE_ID=${VITE_API_AUDIENCE_ID}
-      # - VITE_API_TENANT_ID=${VITE_API_TENANT_ID}
-      - BROKER_HOST_FROM_FRONT=${BROKER_HOST_FROM_FRONT}
-      - BROKER_HOST=${BROKER_HOST}
-      - BROKER_PORT=${BROKER_PORT}
-      - BROKER_TOPIC=${BROKER_TOPIC}
-    volumes:
-      - ./front/src:/app/src
-      - ./common:/app/src/common
-    ports:
-      - 5173:${FRONT_PORT}
-    depends_on:
-      - broker
+  # front:
+  #   container_name: front_watcher
+  #   build:
+  #     context: ./front
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     # - VITE_API_URL=${VITE_API_URL}
+  #     # - VITE_API_AUDIENCE_ID=${VITE_API_AUDIENCE_ID}
+  #     # - VITE_API_TENANT_ID=${VITE_API_TENANT_ID}
+  #     - BROKER_HOST_FROM_FRONT=${BROKER_HOST_FROM_FRONT}
+  #     - BROKER_HOST=${BROKER_HOST}
+  #     - BROKER_PORT=${BROKER_PORT}
+  #     - BROKER_TOPIC=${BROKER_TOPIC}
+  #   volumes:
+  #     - ./front/src:/app/src
+  #     - ./common:/app/src/common
+  #   ports:
+  #     - 5173:${FRONT_PORT}
+  #   depends_on:
+  #     - broker
 
+  db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+     - ./db-data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
   
