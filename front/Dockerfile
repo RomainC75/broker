@@ -1,5 +1,5 @@
 # FROM node:20.14-alpine3.20
-FROM node:18.20.4-alpine
+FROM node:20.14-alpine3.20
 WORKDIR /app
 
 COPY . ./
