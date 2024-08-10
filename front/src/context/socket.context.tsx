@@ -1,8 +1,10 @@
 import { useState, createContext, PropsWithChildren, useEffect } from "react";
-import { ISocketContext } from "../@types/socketContext.type";
+ import { ISocketContext } from "../@types/socketContext.type";
 import { dataJson } from "./data";
 import axiosInstance from "../axios/interceptor";
 import { AxiosReq } from "../axios/requests";
+import { useMsal, useMsalAuthentication } from "@azure/msal-react";
+import { InteractionType } from "@azure/msal-browser";
 
 const SocketContext = createContext<ISocketContext | null>(null);
 
@@ -18,10 +20,19 @@ function SocketProviderWrapper(props: PropsWithChildren) {
   // const [data, setData] = useState<TopicMapDto | null>()
   const [data, setData] = useState<TopicMapDto | null>(JSON.parse(dataJson))
   
+  useMsalAuthentication(InteractionType.Redirect, {
+    scopes:["User.Read"]
+  })
+  const {instance} = useMsal()
+
   
+  useEffect(()=>{
+    console.log("get active : ", instance.getActiveAccount())
+    AxiosReq.getTicket().then(()=>console.log("- did it !")).catch(err=>console.log("-> ERROR : ", err))
+  }, [instance])
 
   useEffect(() => {
-    AxiosReq.getTicket().then(()=>console.log("- did it !")).catch(err=>console.log("-> ERROR : ", err))
+
 
 
     socket.onopen = () => {
@@ -30,7 +41,6 @@ function SocketProviderWrapper(props: PropsWithChildren) {
 
     socket.onmessage = (e) => {
       // setMessage("Get message from server: " + e.data)
-      console.log("->", e.data)
       const content = JSON.parse(e.data)
       console.log("==>", content)
       setData(content)

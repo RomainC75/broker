@@ -18,7 +18,7 @@ func CORSMiddleware(next http.HandlerFunc) http.Handler {
 			// status : 204
 			w.WriteHeader(http.StatusNoContent)
 			w.Write([]byte{})
-			fmt.Println("--> send ")
+			fmt.Println("--> OPTIONS")
 			return
 		}
 
