@@ -23,7 +23,6 @@ function SocketProviderWrapper(props: PropsWithChildren) {
   useEffect(() => {
     socket.onopen = () => {
       // setMessage('Connected')
-      console.log("- CONNECTED")
     };
 
     socket.onmessage = (e) => {

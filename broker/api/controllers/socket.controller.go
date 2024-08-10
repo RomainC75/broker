@@ -3,7 +3,9 @@ package controllers
 import (
 	"broker/broker"
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -20,6 +22,12 @@ func NewSocketCtrl(ctx context.Context) *SocketCtrl {
 	return &SocketCtrl{
 		Broker: b,
 	}
+}
+
+func (SocketCtrl *SocketCtrl) HandleTicket(w http.ResponseWriter, r *http.Request) {
+	auth := r.Header.Get("Authorization")
+	fmt.Println("=>", auth)
+	json.NewEncoder(w).Encode("ping")
 }
 
 func (socketCtrl *SocketCtrl) HandleBroker(conn *websocket.Conn) {

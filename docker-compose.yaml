@@ -1,16 +1,16 @@
 services:
-  # broker:
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ./broker
-  #   volumes:
-  #     - ./broker:/app
-  #     - ./.env:/.env
-  #     - ./shared:/shared
-  #   ports:
-  #   - 3005:${BROKER_PORT}
-  #   depends_on:
-  #     - db
+  broker:
+    build:
+      dockerfile: Dockerfile
+      context: ./broker
+    volumes:
+      - ./broker:/app
+      - ./.env:/.env
+      - ./shared:/shared
+    ports:
+    - 3005:${BROKER_PORT}
+    # depends_on:
+    #   - db
 
   # producer:
   #   build:

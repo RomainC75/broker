@@ -21,14 +21,14 @@ interface IAuthProvider {
 const publicClientApplication = new PublicClientApplication(msalConfig)
 
 const AuthProvider = ({children}: IAuthProvider)  => {
-    console.log("-> ", import.meta.env.VITE_API_SSO_AUDIENCE_ID)
-    console.log("- ", import.meta.env.VITE_API_SSO_TENANT_ID)
+    
     publicClientApplication.enableAccountStorageEvents();
     publicClientApplication.addEventCallback((event) => {
         const authenticationResult = event.payload as AuthenticationResult;
         const account = authenticationResult?.account;
         // setUser(account)
         console.log("-> account !!", authenticationResult)
+        localStorage.setItem("token", JSON.stringify(authenticationResult));
         if (event.eventType === EventType.LOGIN_SUCCESS && account) {
             publicClientApplication.setActiveAccount(account);
         }
