@@ -21,7 +21,6 @@ interface IAuthProvider {
 const publicClientApplication = new PublicClientApplication(msalConfig)
 
 const AuthProvider = ({children}: IAuthProvider)  => {
-    
     publicClientApplication.enableAccountStorageEvents();
     publicClientApplication.addEventCallback((event) => {
         const authenticationResult = event.payload as AuthenticationResult;

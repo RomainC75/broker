@@ -26,6 +26,6 @@ type RequestParams struct {
 }
 
 var (
-	u      = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
+	u      = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/socket/ws"}
 	origin = "http://localhost"
 )

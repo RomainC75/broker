@@ -1,18 +1,23 @@
+import { AuthenticationResult } from "@azure/msal-browser";
 import axios from "axios";
 
-const SERVER_URL = import.meta.env.BROKER_HOST_FROM_FRONT
-const SERVER_PORT = import.meta.env.BROKER_HOST
+const SERVER_PORT = process.env.BROKER_PORT
 const axiosInstance = axios.create({
-  baseURL: `${SERVER_URL}:$${SERVER_PORT}`,
+  baseURL: `http://localhost:${SERVER_PORT}`,
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+  }
 });
+
 
 axiosInstance.interceptors.request.use(
   (config) => {
     const storage: string | null = localStorage.getItem("token");
-    const accessToken: string | null = JSON.parse(storage ?? "");
+    const accessToken: AuthenticationResult | null = JSON.parse(storage ?? "");
 
     if (accessToken) {
-      if (config.headers) config.headers.token = accessToken;
+      if (config.headers) config.headers.Authorization = `Bearer ${accessToken.idToken ?? ""}`;
     }
     return config;
   },

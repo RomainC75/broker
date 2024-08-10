@@ -8,7 +8,6 @@ interface IContentColumn {
 
 const ContentColumn = ({messages}: IContentColumn) => {
     const contentData: ReverseBinanceAggTradeDto[] = messages.map(message => {
-        console.log("- ", message.value)
         try{
             return JSON.parse(message.value)
         } catch(err){

@@ -28,7 +28,7 @@ func main() {
 
 	conf := config.Getenv()
 
-	u := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/socket/ws"}
 
 	var wg sync.WaitGroup
 	wg.Add(1)

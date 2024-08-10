@@ -1,8 +1,8 @@
 import { useState, createContext, PropsWithChildren, useEffect } from "react";
 import { ISocketContext } from "../@types/socketContext.type";
-import useWebSocket from 'react-use-websocket';
 import { dataJson } from "./data";
-import { TopicMapDto } from "../@types/back_types";
+import axiosInstance from "../axios/interceptor";
+import { AxiosReq } from "../axios/requests";
 
 const SocketContext = createContext<ISocketContext | null>(null);
 
@@ -10,7 +10,7 @@ const BROKER_HOST = process.env.BROKER_HOST_FROM_FRONT || "";
 // const BROKER_HOST = "host.docker.internal"
 const BROKER_PORT = process.env.BROKER_PORT || "";
 
-const WS_URL = `ws://${BROKER_HOST}:${BROKER_PORT}/reader`;
+const WS_URL = `ws://${BROKER_HOST}:${BROKER_PORT}/socket/reader`;
 const socket = new WebSocket(WS_URL)
 
 function SocketProviderWrapper(props: PropsWithChildren) {
@@ -21,6 +21,9 @@ function SocketProviderWrapper(props: PropsWithChildren) {
   
 
   useEffect(() => {
+    AxiosReq.getTicket().then(()=>console.log("- did it !")).catch(err=>console.log("-> ERROR : ", err))
+
+
     socket.onopen = () => {
       // setMessage('Connected')
     };

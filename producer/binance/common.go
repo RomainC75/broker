@@ -40,7 +40,7 @@ type RequestParams struct {
 }
 
 var (
-	binanceUrl = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
+	binanceUrl = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/socket/ws"}
 )
 
 func NewConn() *ProducerConnection {
@@ -52,7 +52,7 @@ func NewConn() *ProducerConnection {
 		return nil
 	}
 
-	brokerUrl := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/ws"}
+	brokerUrl := url.URL{Scheme: "ws", Host: fmt.Sprintf("%s:%s", conf.BrokerHost, conf.BrokerPort), Path: "/socket/ws"}
 	brokerConnection := message_broker.NewConn(brokerUrl, "http://localhost")
 	if err != nil {
 		log.Fatal("error with brokerConnection")

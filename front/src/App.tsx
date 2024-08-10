@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import './App.css'
 import { ISocketContext } from './@types/socketContext.type'
 import { SocketContext } from './context/socket.context'
@@ -13,8 +13,12 @@ function App() {
     scopes:["User.Read"]
   })
   const {instance} = useMsal()
-  console.log("get active : ", instance.getActiveAccount())
+  useEffect(()=>{
+    console.log("get active : ", instance.getActiveAccount())
+  }, [instance])
+
   const { myState } = useContext(SocketContext) as ISocketContext;
+  
   return (
     <>
       <HomePage/>
