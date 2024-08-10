@@ -10,7 +10,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <AuthProvider>
       <SocketProviderWrapper>
         <App />
-        {/* <div>HHHHHHEEEE</div> */}
       </SocketProviderWrapper>
     </AuthProvider>
   // </React.StrictMode>,

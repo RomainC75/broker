@@ -50,6 +50,7 @@ func (b *Broker) RemoveWatcher(watchers []*Watcher) {
 	b.m.Lock()
 	for _, w := range watchers {
 		b.Watcher[w] = false
+		delete(b.Watcher, w)
 	}
 	b.m.Unlock()
 }

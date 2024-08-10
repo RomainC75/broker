@@ -32,11 +32,11 @@ func (b *Broker) removeClientFromTopic(topic string, client *Client) error {
 		// many clients ?
 		if len(entry.ConsumerCients) > 1 {
 			// yes : remove one
-			entry.ConsumerCients[client] = false
+			delete(entry.ConsumerCients, client)
 			// no : check messages
 		} else if len(entry.Content) > 1 {
 			// messages ?  =>  remove client
-			entry.ConsumerCients[client] = false
+			delete(entry.ConsumerCients, client)
 		} else {
 			// no message => remove topic
 			delete(b.Topics, topic)
