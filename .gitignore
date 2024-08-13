@@ -4,3 +4,5 @@ trash/
 broker/tmp
 
 db-data
+
+**/*/data

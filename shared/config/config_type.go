@@ -8,6 +8,7 @@ type Config struct {
 	Tickers                          []string
 	BrockerWatcherTopicContentLength int
 	Db                               DB
+	Azure                            Azure
 }
 
 type DB struct {
@@ -16,4 +17,9 @@ type DB struct {
 	User     string
 	Password string
 	DbName   string
+}
+
+type Azure struct {
+	AudienceId string
+	TenantId   string
 }

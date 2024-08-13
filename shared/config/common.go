@@ -52,4 +52,6 @@ func SetEnv() {
 	(*config).Db.Password = os.Getenv("POSTGRES_PASSWORD")
 	(*config).Db.DbName = os.Getenv("POSTGRES_DB_NAME")
 
+	(*config).Azure.AudienceId = os.Getenv("VITE_API_SSO_AUDIENCE_ID")
+	(*config).Azure.TenantId = os.Getenv("VITE_API_SSO_TENANT_ID")
 }

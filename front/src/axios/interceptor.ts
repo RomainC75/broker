@@ -19,7 +19,7 @@ axiosInstance.interceptors.request.use(
     console.log("é-< access token", accessToken)
     if (accessToken) {
       console.log("-> access token present !!!!!")
-      if (config.headers) config.headers.Authorization = `Bearer ${accessToken.idToken ?? ""}`;
+      if (config.headers) config.headers.Authorization = `Bearer ${accessToken.accessToken ?? ""}`;
     }
     return config;
   },

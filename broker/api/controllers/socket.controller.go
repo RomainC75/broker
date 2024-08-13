@@ -1,18 +1,22 @@
 package controllers
 
 import (
+	"broker/api/services"
 	"broker/broker"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 )
 
 type SocketCtrl struct {
-	Broker *broker.Broker
+	Broker     *broker.Broker
+	SsoService services.SsoServiceInterface
 }
 
 func NewSocketCtrl(ctx context.Context) *SocketCtrl {
@@ -20,14 +24,28 @@ func NewSocketCtrl(ctx context.Context) *SocketCtrl {
 	b.LaunchLoop(ctx)
 	b.LaunchWatcherLoop(ctx)
 	return &SocketCtrl{
-		Broker: b,
+		Broker:     b,
+		SsoService: services.NewSsoService(),
 	}
 }
 
 func (SocketCtrl *SocketCtrl) HandleTicket(w http.ResponseWriter, r *http.Request) {
 	auth := r.Header.Get("Authorization")
 	fmt.Println("=>", auth)
+
+	authorizationParts := strings.Split(auth, " ")
+	if len(authorizationParts) != 2 {
+		json.NewEncoder(w).Encode("bearer error ")
+	}
+
+	keys, err := SocketCtrl.SsoService.GetPublicKeys(authorizationParts[1])
+	if err != nil {
+		logrus.Error(err.Error())
+	}
+
+	fmt.Println("keys : ", keys)
 	json.NewEncoder(w).Encode("ping")
+
 }
 
 func (socketCtrl *SocketCtrl) HandleBroker(conn *websocket.Conn) {
