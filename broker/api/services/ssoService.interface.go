@@ -1,6 +1,7 @@
 package services
 
+import "github.com/golang-jwt/jwt/v5"
+
 type SsoServiceInterface interface {
-	GetPublicKeys(token string) ([]JWKS, error)
-	IsKidInPublicKeys(token string, keys []JWKS)
+	ExtractTokenClaims(tokenString string) (jwt.Claims, error)
 }

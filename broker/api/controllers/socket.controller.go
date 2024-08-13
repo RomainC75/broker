@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"shared/utils"
 	"strings"
 	"time"
 
@@ -38,12 +39,12 @@ func (SocketCtrl *SocketCtrl) HandleTicket(w http.ResponseWriter, r *http.Reques
 		json.NewEncoder(w).Encode("bearer error ")
 	}
 
-	keys, err := SocketCtrl.SsoService.GetPublicKeys(authorizationParts[1])
+	userClaims, err := SocketCtrl.SsoService.ExtractTokenClaims(authorizationParts[1])
 	if err != nil {
 		logrus.Error(err.Error())
 	}
 
-	fmt.Println("keys : ", keys)
+	utils.PrettyDisplay("RESULT : ", userClaims)
 	json.NewEncoder(w).Encode("ping")
 
 }

@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"shared/config"
 	"shared/utils"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type SsoService struct {
@@ -38,10 +40,22 @@ func NewSsoService() *SsoService {
 		VerifyEndpoint:    "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
 		discoveryEndpoint: fmt.Sprintf("https://login.microsoftonline.com/%s/discovery/keys?appid=%s", tenantId, audienceId),
 	}
+}
+
+func (sso *SsoService) ExtractTokenClaims(tokenString string) (jwt.Claims, error) {
+	keys, err := sso.getPublicKeys()
+	if err != nil {
+		return jwt.MapClaims{}, err
+	}
+	claims, ok := sso.isKidInPublicKeys(tokenString, keys)
+	if !ok {
+		return jwt.MapClaims{}, errors.New("token not valid")
+	}
+	return claims, nil
 
 }
 
-func (ssoService *SsoService) GetPublicKeys(token string) ([]JWKS, error) {
+func (ssoService *SsoService) getPublicKeys() ([]JWKS, error) {
 	resp, err := http.Get(ssoService.discoveryEndpoint)
 	if err != nil {
 		return []JWKS{}, err
@@ -68,15 +82,16 @@ func (ssoService *SsoService) GetPublicKeys(token string) ([]JWKS, error) {
 	if len(jwksKeys) == 0 {
 		return []JWKS{}, errors.New("no key found")
 	}
-	utils.PrettyDisplay(" RECEIVED KID KEYS : ", jwksKeys)
-	ssoService.IsKidInPublicKeys(token, jwksKeys)
 
 	return jwksKeys, err
 }
 
-func (ssoService *SsoService) IsKidInPublicKeys(token string, keys []JWKS) {
-	for range keys {
-
-		helper_jwt.Verify(token)
+func (ssoService *SsoService) isKidInPublicKeys(tokenString string, keys []JWKS) (jwt.Claims, bool) {
+	for _, key := range keys {
+		token, _ := helper_jwt.Verify(tokenString)
+		if token.Header["kid"] == key.Kid {
+			return token.Claims, true
+		}
 	}
+	return jwt.MapClaims{}, false
 }
