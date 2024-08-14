@@ -2,7 +2,6 @@ package redis_repo
 
 import (
 	"encoding/json"
-	"errors"
 	"time"
 )
 
@@ -43,9 +42,8 @@ func (repo *RedisRepo) Get(key string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return "", errors.New("could not delete the outdated key")
+		return "", nil
 	}
-
 	return redisData.Content, nil
 }
 

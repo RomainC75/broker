@@ -13,6 +13,7 @@ import (
 	"shared/utils"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sirupsen/logrus"
 )
 
 type SsoService struct {
@@ -56,18 +57,32 @@ func (sso *SsoService) ExtractTokenClaims(tokenString string) (jwt.Claims, error
 		return jwt.MapClaims{}, errors.New("token not valid")
 	}
 	return claims, nil
-
 }
 
-func (ssoService *SsoService) getPublicKeys() ([]JWKS, error) {
+func (ssoService *SsoService) getRawAzureOpenId() ([]byte, error) {
+	keysStr, err := ssoService.RedisRepo.Get("azure_Kids")
+	if err != nil {
+		logrus.Warn("NO CACHE")
+		logrus.Warn("error message : ", err.Error())
+	}
+	if err == nil {
+		logrus.Warn("CACHE")
+		return []byte(keysStr), nil
+	}
+
 	resp, err := http.Get(ssoService.discoveryEndpoint)
 	if err != nil {
-		return []JWKS{}, err
+		return []byte{}, err
 	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
+	return body, nil
+}
 
-	microsoftDiscoveryKeyDto, err := utils.UnmarshallDto[dto_response.MicrosoftDiscoveryKeyDto](body)
+func (ssoService *SsoService) getPublicKeys() ([]JWKS, error) {
+	rawOpenIdKeys, err := ssoService.getRawAzureOpenId()
+
+	microsoftDiscoveryKeyDto, err := utils.UnmarshallDto[dto_response.MicrosoftDiscoveryKeyDto](rawOpenIdKeys)
 	if err != nil {
 		return []JWKS{}, err
 	}
