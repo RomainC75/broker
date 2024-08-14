@@ -1,7 +1,26 @@
 package redis_repo
 
-func (repo *RedisRepo) Set(key string, value string) error {
-	err := repo.client.Set(repo.ctx, key, value, 0).Err()
+import (
+	"encoding/json"
+	"errors"
+	"time"
+)
+
+type RedisData struct {
+	T       time.Time `json:"t"`
+	Content string    `json:"content"`
+}
+
+func (repo *RedisRepo) Set(key string, content string) error {
+	redisData := RedisData{
+		T:       time.Now(),
+		Content: content,
+	}
+	b, err := json.Marshal(redisData)
+	if err != nil {
+		return err
+	}
+	err = repo.client.Set(repo.ctx, key, b, 0).Err()
 	if err != nil {
 		return err
 	}
@@ -9,9 +28,31 @@ func (repo *RedisRepo) Set(key string, value string) error {
 }
 
 func (repo *RedisRepo) Get(key string) (string, error) {
-	value, err := repo.client.Get(repo.ctx, key).Result()
+	strData, err := repo.client.Get(repo.ctx, key).Result()
 	if err != nil {
 		return "", err
 	}
-	return value, nil
+	var redisData RedisData
+	err = json.Unmarshal([]byte(strData), &redisData)
+	if err != nil {
+		return "", err
+	}
+
+	if isRefreshNeeded(redisData.T, repo.refreshTime) {
+		_, err = repo.client.Del(repo.ctx, key).Result()
+		if err != nil {
+			return "", err
+		}
+		return "", errors.New("could not delete the outdated key")
+	}
+
+	return redisData.Content, nil
+}
+
+func isRefreshNeeded(before time.Time, authorizedDuration time.Duration) bool {
+	realDuration := time.Since(before)
+	if realDuration > authorizedDuration {
+		return false
+	}
+	return true
 }

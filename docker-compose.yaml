@@ -1,19 +1,22 @@
 services:
-  redis:
-    image: redis:latest
+  redis-broker:
+    image: redis:7.4.0-alpine
     restart: always
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    command: --port ${REDIS_PORT}
     ports:
       - "${REDIS_PORT}:${REDIS_PORT}"
 
   redisinsights:
-    image: redislabs/redisinsight:latest
+    image: redis/redisinsight:latest
     restart: always
     ports:
-      - '8001:8001'
+      - "5540:5540"
     volumes:
       - ./db-data/redisinsight:/db
+    # environment:
+    #   - RI_APP_HOST=${REDIS_HOST}:${REDIS_PORT}
 
   broker:
     build:
