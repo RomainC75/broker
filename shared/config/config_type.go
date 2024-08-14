@@ -9,6 +9,7 @@ type Config struct {
 	BrockerWatcherTopicContentLength int
 	Db                               DB
 	Azure                            Azure
+	Redis                            Redis
 }
 
 type DB struct {
@@ -22,4 +23,10 @@ type DB struct {
 type Azure struct {
 	AudienceId string
 	TenantId   string
+}
+
+type Redis struct {
+	Port     int
+	Host     string
+	RefreshM int
 }
