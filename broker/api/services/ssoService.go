@@ -3,11 +3,13 @@ package services
 import (
 	dto_response "broker/api/dto/response"
 	helper_jwt "broker/helpers/jwt"
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"shared/config"
+	redis_repo "shared/repositories/redis"
 	"shared/utils"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -18,6 +20,7 @@ type SsoService struct {
 	discoveryEndpoint string
 	tenantId          string
 	audienceId        string
+	RedisRepo         redis_repo.RedisRepo
 }
 
 type JWKS struct {
@@ -29,16 +32,17 @@ func NewSsoService() *SsoService {
 	conf := config.Getenv()
 	tenantId := conf.Azure.TenantId
 	audienceId := conf.Azure.TenantId
+	ctx := context.Background()
 
 	// * find the same value between :
 	// decoded access token/header/kid AND
 	// public keys / kid
-
 	return &SsoService{
 		tenantId:          tenantId,
 		audienceId:        audienceId,
 		VerifyEndpoint:    "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
 		discoveryEndpoint: fmt.Sprintf("https://login.microsoftonline.com/%s/discovery/keys?appid=%s", tenantId, audienceId),
+		RedisRepo:         *redis_repo.NewRedis(ctx),
 	}
 }
 
