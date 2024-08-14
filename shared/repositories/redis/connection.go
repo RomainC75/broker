@@ -1,6 +1,7 @@
 package redis_repo
 
 import (
+	"context"
 	"fmt"
 	"shared/config"
 	"time"
@@ -11,9 +12,10 @@ import (
 type RedisRepo struct {
 	client      *redis.Client
 	refreshTime time.Duration
+	ctx         context.Context
 }
 
-func NewRedis() *RedisRepo {
+func NewRedis(ctx context.Context) *RedisRepo {
 	conf := config.Getenv()
 
 	rdb := redis.NewClient(&redis.Options{
@@ -25,5 +27,6 @@ func NewRedis() *RedisRepo {
 	return &RedisRepo{
 		client:      rdb,
 		refreshTime: time.Minute * time.Duration(conf.Redis.RefreshM),
+		ctx:         ctx,
 	}
 }

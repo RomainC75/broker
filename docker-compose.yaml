@@ -1,4 +1,20 @@
 services:
+  redis:
+    image: redis:latest
+    restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+
+  redisinsights:
+    image: redislabs/redisinsight:latest
+    restart: always
+    ports:
+      - '8001:8001'
+    volumes:
+      - ./db-data/redisinsight:/db
+
   broker:
     build:
       dockerfile: Dockerfile
@@ -73,7 +89,7 @@ services:
   #   ports:
   #     - "5432:5432"
   #   volumes:
-  #    - ./db-data:/var/lib/postgresql/data
+  #    - ./db-data/postgres:/var/lib/postgresql/data
 
   # adminer:
   #   image: adminer
