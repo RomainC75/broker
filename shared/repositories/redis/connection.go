@@ -19,7 +19,7 @@ func NewRedis(ctx context.Context) *RedisRepo {
 	conf := config.Getenv()
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", conf.Redis.Host, conf.Redis.Port),
+		Addr:     fmt.Sprintf("%s:%d", conf.Redis.Host, conf.Redis.Port),
 		Password: "",
 		DB:       0,
 	})
