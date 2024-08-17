@@ -20,7 +20,7 @@ INSERT INTO currencies (
     first_trade_id,
     aggregate_trade_id,
     is_the_buyer_the_marker_maker,
-    ignor,
+    is_ignore,
     trade_time
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11

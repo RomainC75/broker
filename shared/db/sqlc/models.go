@@ -15,7 +15,7 @@ type Currency struct {
 	FirstTradeID               int64     `json:"firstTradeId"`
 	AggregateTradeID           int64     `json:"aggregateTradeId"`
 	IsTheBuyerTheMarkerMaker   bool      `json:"isTheBuyerTheMarkerMaker"`
-	Ignor                      bool      `json:"ignor"`
+	IsIgnore                   bool      `json:"isIgnore"`
 	TradeTime                  time.Time `json:"tradeTime"`
 }
 

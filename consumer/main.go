@@ -9,6 +9,7 @@ import (
 	message_broker "shared/broker"
 	"shared/config"
 	db "shared/db/sqlc"
+	"shared/utils"
 	"sync"
 	"time"
 
@@ -52,6 +53,7 @@ func jobHandler(message []byte) bool {
 	}
 
 	stockParam := ConvertAggToStockParam(reverseBinanceAggTradeDto)
+	utils.PrettyDisplay("params : ", stockParam)
 	ctx := context.Background()
 	_, err = (*store).CreateStock(ctx, stockParam)
 	if err != nil {
@@ -74,7 +76,7 @@ func ConvertAggToStockParam(aggT binance_dto.ReverseBinanceAggTradeDto) db.Creat
 		TotalTradedQuotAssetVolume: aggT.TotalTradedQuotAssetVolume,
 		AggregateTradeID:           aggT.AggregateTradeID,
 		IsTheBuyerTheMarkerMaker:   aggT.IsTheBuyerTheMarkerMaker,
-		Ignor:                      aggT.Ignore,
+		IsIgnore:                   aggT.Ignore,
 		TradeTime:                  tradeTimestamp,
 	}
 }

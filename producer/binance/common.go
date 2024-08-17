@@ -10,6 +10,7 @@ import (
 	message_broker "shared/broker"
 	"shared/config"
 	config_utils "shared/config/utils"
+	"shared/utils"
 
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -40,7 +41,7 @@ type RequestParams struct {
 }
 
 var (
-	binanceUrl = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/socket/ws"}
+	binanceUrl = url.URL{Scheme: "wss", Host: "stream.binance.com:443", Path: "/ws"}
 )
 
 func NewConn() *ProducerConnection {
@@ -48,7 +49,7 @@ func NewConn() *ProducerConnection {
 
 	binanceConnection, err := ConnectToSocket(binanceUrl)
 	if err != nil {
-		log.Fatal("error with binanceConnection")
+		logrus.Fatal("error with binanceConnection")
 		return nil
 	}
 
@@ -67,6 +68,7 @@ func NewConn() *ProducerConnection {
 
 func ConnectToSocket(url url.URL) (*BinanceConnection, error) {
 	config, err := websocket.NewConfig(url.String(), "http://localhost")
+	utils.PrettyDisplay("config : ", config)
 	if err != nil {
 		return nil, err
 	}

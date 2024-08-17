@@ -28,36 +28,36 @@ services:
       - ./shared:/shared
     ports:
     - 3005:${BROKER_PORT}
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
 
-  # producer:
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ./producer
-  #   volumes:
-  #     - ./producer:/app
-  #     - ./.env:/.env
-  #     - ./shared:/shared
-  #   depends_on:
-  #     - broker
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
+  producer:
+    build:
+      dockerfile: Dockerfile
+      context: ./producer
+    volumes:
+      - ./producer:/app
+      - ./.env:/.env
+      - ./shared:/shared
+    depends_on:
+      - broker
+    deploy:
+      mode: replicated
+      replicas: 1
 
-  # consumer:
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ./consumer
-  #   volumes:
-  #     - ./consumer:/app
-  #     - ./.env:/.env
-  #     - ./shared:/shared
-  #   depends_on:
-  #     - producer
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
+  consumer:
+    build:
+      dockerfile: Dockerfile
+      context: ./consumer
+    volumes:
+      - ./consumer:/app
+      - ./.env:/.env
+      - ./shared:/shared
+    depends_on:
+      - producer
+    deploy:
+      mode: replicated
+      replicas: 1
 
   front:
     container_name: front_watcher
@@ -83,20 +83,20 @@ services:
     # depends_on:
     #   - broker
 
-  # db:
-  #   image: postgres:14-alpine
-  #   restart: always
-  #   environment:
-  #     - POSTGRES_USER=${POSTGRES_USER}
-  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #    - ./db-data/postgres:/var/lib/postgresql/data
+  db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+     - ./db-data/postgres:/var/lib/postgresql/data
 
-  # adminer:
-  #   image: adminer
-  #   restart: always
-  #   ports:
-  #     - 8080:8080
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
   

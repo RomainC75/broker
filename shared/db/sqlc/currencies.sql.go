@@ -16,12 +16,12 @@ INSERT INTO currencies (
     first_trade_id,
     aggregate_trade_id,
     is_the_buyer_the_marker_maker,
-    ignor,
+    is_ignore,
     trade_time
 ) VALUES (
     $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
 )
-RETURNING id, event_type, event_time, symbol, price_change, last_trade_id, total_traded_quot_asset_volume, first_trade_id, aggregate_trade_id, is_the_buyer_the_marker_maker, ignor, trade_time
+RETURNING id, event_type, event_time, symbol, price_change, last_trade_id, total_traded_quot_asset_volume, first_trade_id, aggregate_trade_id, is_the_buyer_the_marker_maker, is_ignore, trade_time
 `
 
 type CreateStockParams struct {
@@ -34,7 +34,7 @@ type CreateStockParams struct {
 	FirstTradeID               int64     `json:"firstTradeId"`
 	AggregateTradeID           int64     `json:"aggregateTradeId"`
 	IsTheBuyerTheMarkerMaker   bool      `json:"isTheBuyerTheMarkerMaker"`
-	Ignor                      bool      `json:"ignor"`
+	IsIgnore                   bool      `json:"isIgnore"`
 	TradeTime                  time.Time `json:"tradeTime"`
 }
 
@@ -49,7 +49,7 @@ func (q *Queries) CreateStock(ctx context.Context, arg CreateStockParams) (Curre
 		arg.FirstTradeID,
 		arg.AggregateTradeID,
 		arg.IsTheBuyerTheMarkerMaker,
-		arg.Ignor,
+		arg.IsIgnore,
 		arg.TradeTime,
 	)
 	var i Currency
@@ -64,7 +64,7 @@ func (q *Queries) CreateStock(ctx context.Context, arg CreateStockParams) (Curre
 		&i.FirstTradeID,
 		&i.AggregateTradeID,
 		&i.IsTheBuyerTheMarkerMaker,
-		&i.Ignor,
+		&i.IsIgnore,
 		&i.TradeTime,
 	)
 	return i, err
@@ -72,7 +72,7 @@ func (q *Queries) CreateStock(ctx context.Context, arg CreateStockParams) (Curre
 
 const getLastXCurrencies = `-- name: GetLastXCurrencies :many
 
-SELECT id, event_type, event_time, symbol, price_change, last_trade_id, total_traded_quot_asset_volume, first_trade_id, aggregate_trade_id, is_the_buyer_the_marker_maker, ignor, trade_time FROM currencies
+SELECT id, event_type, event_time, symbol, price_change, last_trade_id, total_traded_quot_asset_volume, first_trade_id, aggregate_trade_id, is_the_buyer_the_marker_maker, is_ignore, trade_time FROM currencies
 WHERE symbol = $1
 ORDER BY event_time DESC
 LIMIT $2
@@ -107,7 +107,7 @@ func (q *Queries) GetLastXCurrencies(ctx context.Context, arg GetLastXCurrencies
 			&i.FirstTradeID,
 			&i.AggregateTradeID,
 			&i.IsTheBuyerTheMarkerMaker,
-			&i.Ignor,
+			&i.IsIgnore,
 			&i.TradeTime,
 		); err != nil {
 			return nil, err

@@ -29,21 +29,6 @@ type JWKS struct {
 	X5c string
 }
 
-// func ctxListener(ctx context.Context) {
-// 	go func() {
-// 		for {
-// 			select {
-// 			case <-ctx.Done():
-// 				logrus.Error("======= DONE ")
-// 				return
-// 			default:
-// 				logrus.Error("ctx continues ")
-// 				time.Sleep(time.Second * 2)
-// 			}
-// 		}
-// 	}()
-// }
-
 func NewSsoService() *SsoService {
 	conf := config.Getenv()
 	tenantId := conf.Azure.TenantId
@@ -79,8 +64,8 @@ func (sso *SsoService) ExtractTokenClaims(tokenString string) (jwt.Claims, error
 func (ssoService *SsoService) getRawAzureOpenId() ([]byte, error) {
 	keysStr, err := ssoService.RedisRepo.Get("azure_Kids")
 	if err != nil {
+		// (redis: nil => could not retrieve)
 		logrus.Info("======> NO CACHE !!!")
-		logrus.Warn("error message : ", err.Error())
 	}
 	if err == nil {
 		logrus.Warn("=====> CACHE", keysStr)
@@ -100,7 +85,6 @@ func (ssoService *SsoService) getRawAzureOpenId() ([]byte, error) {
 
 func (ssoService *SsoService) getPublicKeys() ([]JWKS, error) {
 	rawOpenIdKeys, err := ssoService.getRawAzureOpenId()
-	// logrus.Info(rawOpenIdKeys)
 	if err != nil {
 
 		return []JWKS{}, err
