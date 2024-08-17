@@ -6,7 +6,6 @@ import (
 	"shared/config"
 	"time"
 
-	"github.com/pingcap/log"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 )
@@ -19,27 +18,16 @@ type RedisRepo struct {
 
 func NewRedis(ctx context.Context) *RedisRepo {
 	conf := config.Getenv()
-
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%d", conf.Redis.Host, conf.Redis.Port),
 		Password: "",
 		DB:       0,
 	})
-	if rdb == nil {
-		log.Error("COULD NOT CONNECT TO REDIS")
-
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		logrus.Warn(err.Error())
+	} else {
+		logrus.Info("redis is pinged !")
 	}
-
-	err := rdb.Set(ctx, "key", "value", 0).Err()
-	if err != nil {
-		panic(err)
-	}
-
-	val, err := rdb.Get(ctx, "key").Result()
-	if err != nil {
-		panic(err)
-	}
-	logrus.Warn("key", val)
 
 	return &RedisRepo{
 		client:      rdb,

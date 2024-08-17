@@ -21,7 +21,7 @@ type SsoService struct {
 	discoveryEndpoint string
 	tenantId          string
 	audienceId        string
-	RedisRepo         redis_repo.RedisRepo
+	RedisRepo         *redis_repo.RedisRepo
 }
 
 type JWKS struct {
@@ -29,21 +29,38 @@ type JWKS struct {
 	X5c string
 }
 
+// func ctxListener(ctx context.Context) {
+// 	go func() {
+// 		for {
+// 			select {
+// 			case <-ctx.Done():
+// 				logrus.Error("======= DONE ")
+// 				return
+// 			default:
+// 				logrus.Error("ctx continues ")
+// 				time.Sleep(time.Second * 2)
+// 			}
+// 		}
+// 	}()
+// }
+
 func NewSsoService() *SsoService {
 	conf := config.Getenv()
 	tenantId := conf.Azure.TenantId
 	audienceId := conf.Azure.TenantId
 	ctx := context.Background()
-
+	// ctxListener(ctx)
 	// * find the same value between :
 	// decoded access token/header/kid AND
 	// public keys / kid
+	redisRepo := redis_repo.NewRedis(ctx)
+	logrus.Warn(*redisRepo)
 	return &SsoService{
 		tenantId:          tenantId,
 		audienceId:        audienceId,
 		VerifyEndpoint:    "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
 		discoveryEndpoint: fmt.Sprintf("https://login.microsoftonline.com/%s/discovery/keys?appid=%s", tenantId, audienceId),
-		RedisRepo:         *redis_repo.NewRedis(ctx),
+		RedisRepo:         redisRepo,
 	}
 }
 
@@ -62,25 +79,32 @@ func (sso *SsoService) ExtractTokenClaims(tokenString string) (jwt.Claims, error
 func (ssoService *SsoService) getRawAzureOpenId() ([]byte, error) {
 	keysStr, err := ssoService.RedisRepo.Get("azure_Kids")
 	if err != nil {
-		logrus.Warn("NO CACHE")
+		logrus.Info("======> NO CACHE !!!")
 		logrus.Warn("error message : ", err.Error())
 	}
 	if err == nil {
-		logrus.Warn("CACHE")
+		logrus.Warn("=====> CACHE", keysStr)
 		return []byte(keysStr), nil
 	}
 
 	resp, err := http.Get(ssoService.discoveryEndpoint)
 	if err != nil {
+		logrus.Info("error get redis : ", err.Error())
 		return []byte{}, err
 	}
 	defer resp.Body.Close()
 	body, _ := io.ReadAll(resp.Body)
+	ssoService.RedisRepo.Set("azure_Kids", string(body))
 	return body, nil
 }
 
 func (ssoService *SsoService) getPublicKeys() ([]JWKS, error) {
 	rawOpenIdKeys, err := ssoService.getRawAzureOpenId()
+	// logrus.Info(rawOpenIdKeys)
+	if err != nil {
+
+		return []JWKS{}, err
+	}
 
 	microsoftDiscoveryKeyDto, err := utils.UnmarshallDto[dto_response.MicrosoftDiscoveryKeyDto](rawOpenIdKeys)
 	if err != nil {

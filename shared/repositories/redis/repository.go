@@ -1,7 +1,6 @@
 package redis_repo
 
 import (
-	"encoding/json"
 	"time"
 )
 
@@ -10,16 +9,8 @@ type RedisData struct {
 	Content string    `json:"content"`
 }
 
-func (repo *RedisRepo) Set(key string, content string) error {
-	redisData := RedisData{
-		T:       time.Now(),
-		Content: content,
-	}
-	b, err := json.Marshal(redisData)
-	if err != nil {
-		return err
-	}
-	err = repo.client.Set(repo.ctx, key, b, 0).Err()
+func (repo *RedisRepo) Set(key string, value string) error {
+	err := repo.client.Set(repo.ctx, key, value, repo.refreshTime).Err()
 	if err != nil {
 		return err
 	}
@@ -28,23 +19,11 @@ func (repo *RedisRepo) Set(key string, content string) error {
 
 func (repo *RedisRepo) Get(key string) (string, error) {
 	strData, err := repo.client.Get(repo.ctx, key).Result()
+	// fmt.Println("RESULT ROOT: ", strData)
 	if err != nil {
 		return "", err
 	}
-	var redisData RedisData
-	err = json.Unmarshal([]byte(strData), &redisData)
-	if err != nil {
-		return "", err
-	}
-
-	if isRefreshNeeded(redisData.T, repo.refreshTime) {
-		_, err = repo.client.Del(repo.ctx, key).Result()
-		if err != nil {
-			return "", err
-		}
-		return "", nil
-	}
-	return redisData.Content, nil
+	return strData, nil
 }
 
 func isRefreshNeeded(before time.Time, authorizedDuration time.Duration) bool {
