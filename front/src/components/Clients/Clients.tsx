@@ -1,9 +1,9 @@
 import React from "react";
-import { ClientDto } from "../../@types/back_types";
+import { ClientDto } from "../../@types/broker.type";
 import TrafficLight from "../TrafficLight/TrafficLight";
 import './client.scss'
 
-interface IClients {
+export interface IClients {
   clients: ClientDto[];
 }
 
@@ -11,7 +11,7 @@ const Clients = ({ clients }: IClients) => {
   return (
     <div className="Clients">
       {clients.map((client, index) => (
-        <div key={`client-${index}`} className="client">
+        <div key={`client-${index}`} className="client" data-testid="client-name">
           <p>{index}</p>
           <div>
             <div>
