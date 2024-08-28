@@ -70,8 +70,8 @@ func (b *Broker) GoListenToClient(client *Client, wg *sync.WaitGroup) {
 					}
 					client.SetIsAvailable(isAvailableDto.IsAvailable)
 				case broker_dto.AcceptJob:
-					b.SetJobToAccepted(messageContent.Topic, messageContent.Offset)
-					b.AdaptReaderIndex(messageContent.Topic)
+					b.SetJobToAccepted(messageContent.Topic, messageContent.Id)
+					// b.AdaptReaderIndex(messageContent.Topic)
 				}
 			}
 		}

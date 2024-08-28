@@ -44,21 +44,21 @@ func TestLinkedList(t *testing.T) {
 	assert.Equal(t, deleteElementListRef, deleteElementList, "should have the same element guy")
 
 	// * First out
-	firstOut, err := linkedList.ExtractFirstValue()
+	firstOut, _, err := linkedList.GetFirstValueAndToHandling()
 	fmt.Println("-> firstOut : ", firstOut)
-	assert.NoError(t, err, "not supposed to raise an error with this ExtractFirstValue()")
+	assert.NoError(t, err, "not supposed to raise an error with this.GetFirstValueAndToHandling()")
 	assert.Equal(t, firstOut, FirstOut)
 
 	// * First out when Queue is only one element
 	addedElement := 2
 	emptyQueue := NewQueue[int](10)
 	emptyQueue.AddElement(addedElement)
-	extractedValue, err := emptyQueue.ExtractFirstValue()
+	extractedValue, _, err := emptyQueue.GetFirstValueAndToHandling()
 	assert.NoError(t, err, "should be an error when extracting an empty Queue")
 	assert.Equal(t, extractedValue, addedElement)
 
 	// * First out when empty Queue
-	_, err = emptyQueue.ExtractFirstValue()
+	_, _, err = emptyQueue.GetFirstValueAndToHandling()
 	assert.Error(t, err, "should be an error when extracting an empty Queue")
 	assert.EqualError(t, err, "queue is empty")
 

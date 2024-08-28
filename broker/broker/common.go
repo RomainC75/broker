@@ -1,6 +1,7 @@
 package broker
 
 import (
+	service "broker/services"
 	"context"
 	"fmt"
 	"shared/config"
@@ -42,7 +43,7 @@ type Message struct {
 }
 
 type Topic struct {
-	Content []Message
+	Queue *service.Queue[Message]
 	// ConsumerCients []*Client
 	ConsumerCients map[*Client]bool
 	ReaderIndex    int
@@ -127,8 +128,9 @@ func GetBroker() *Broker {
 func (b *Broker) scanTopicsAndSend() {
 	for topicName, topic := range b.Topics {
 		// logrus.Infof("==> %s : consmrs : %d / queue / %d \n", topicName, len(topic.ConsumerCients), len(topic.Content))
-		if len(topic.Content) > 0 {
-			logrus.Warning("-> scanning : LAST CONTENT : ", topic.Content[len(topic.Content)-1])
+		if topic.Queue.GetSize() > 0 {
+			content, _ := topic.Queue.ReadFirstContent()
+			logrus.Warning("-> scanning : LAST CONTENT : ", content)
 			topic.SendJobToAvailableClient(topicName)
 		} else {
 			logrus.Errorf("topic %s EMPTY", topicName)

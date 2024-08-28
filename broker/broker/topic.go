@@ -1,6 +1,7 @@
 package broker
 
 import (
+	service "broker/services"
 	"encoding/json"
 	"errors"
 	"shared/broker_dto"
@@ -9,9 +10,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const QUEUE_LENGTH = 2000
+
 func NewTopic() *Topic {
 	return &Topic{
-		Content:        []Message{},
+		Queue:          service.NewQueue[Message](QUEUE_LENGTH),
 		ConsumerCients: map[*Client]bool{},
 		m:              &sync.Mutex{},
 	}
@@ -34,7 +37,7 @@ func (b *Broker) removeClientFromTopic(topic string, client *Client) error {
 			// yes : remove one
 			delete(entry.ConsumerCients, client)
 			// no : check messages
-		} else if len(entry.Content) > 1 {
+		} else if entry.Queue.GetSize() > 1 {
 			// messages ?  =>  remove client
 			delete(entry.ConsumerCients, client)
 		} else {
@@ -50,29 +53,31 @@ func (b *Broker) removeClientFromTopic(topic string, client *Client) error {
 func (t *Topic) SendJobToAvailableClient(topicName string) {
 	for c := range t.ConsumerCients {
 		if c.IsAvailable {
-			var nextJob []byte
-			for i, jobContent := range t.Content {
-				if !jobContent.IsSent && !jobContent.IsHandled {
-					nextJob = jobContent.Value
-					t.Content[i].IsSent = true
-					message := broker_dto.Message{
-						Topic:      topicName,
-						ActionCode: broker_dto.SendJob,
-						Offset:     i,
-						Content:    nextJob,
-					}
-					messageB, err := json.Marshal(message)
-					if err != nil {
-						logrus.Errorf("Error trying to marshall message in topic %s\n", topicName)
-					}
-					_, err = c.Conn.Write(messageB)
-					if err != nil {
-						logrus.Errorf("Error trying to send message in topic %s\n", topicName)
-					}
-					logrus.Infof("message SENT in topic %s\n", topicName)
-					break
-				}
+			// var nextJob []byte
+			nextJob, id, _ := t.Queue.GetFirstValueAndToHandling()
+
+			contentB, err := json.Marshal(nextJob)
+			if err != nil {
+				logrus.Warn(err.Error())
 			}
+			// nextJob = jobContent.Value
+			message := broker_dto.Message{
+				Topic:      topicName,
+				ActionCode: broker_dto.SendJob,
+				// Offset:     i,
+				Id:      id,
+				Content: contentB,
+			}
+			messageB, err := json.Marshal(message)
+			if err != nil {
+				logrus.Errorf("Error trying to marshall message in topic %s\n", topicName)
+			}
+			_, err = c.Conn.Write(messageB)
+			if err != nil {
+				logrus.Errorf("Error trying to send message in topic %s\n", topicName)
+			}
+			logrus.Infof("message SENT in topic %s\n", topicName)
+			break
 		}
 	}
 }

@@ -60,7 +60,7 @@ func ToConsumerClients(rawClients map[*Client]bool) []ClientDto {
 
 func ToTopicDto(topic Topic, param WatcherParameter) TopicDto {
 	return TopicDto{
-		Content:        ToMessageDto(topic.Content, param),
+		Content:        ToMessageDto(topic.Queue.GetValues(), param),
 		ConsumerCients: ToConsumerClients(topic.ConsumerCients),
 		ReaderIndex:    topic.ReaderIndex,
 	}
